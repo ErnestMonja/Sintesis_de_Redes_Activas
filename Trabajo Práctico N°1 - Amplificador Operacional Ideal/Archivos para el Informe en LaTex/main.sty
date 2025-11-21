@@ -1,0 +1,711 @@
+\documentclass[12pt,a4paper]{article}
+
+% Paquetes básicos
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{setspace}
+
+\onehalfspacing
+
+% Para circuitos
+\usepackage{circuitikz}
+
+% Datos
+\author{Nombre y Apellido \\ Legajo: XXXXX}
+\date{\today}
+
+\begin{document}
+
+% Carátula personalizada
+\begin{titlepage}
+    \centering
+    \includegraphics[width=0.25\textwidth]{escudo.png} 
+    \hspace{1cm}
+    \includegraphics[width=0.3\textwidth]{download.png} \\[1cm]
+
+    {\large \textbf{UNIVERSIDAD NACIONAL DE CÓRDOBA} \\[0.5cm]}
+    {\large \textbf {FACULTAD DE CIENCIAS EXACTAS, FÍSICAS Y NATURALES} \\[1cm]}
+    {\Large SÍNTESIS DE REDES ACTIVAS \\[1cm]}
+
+    \rule{\textwidth}{0.5pt} \\[0.5cm]
+    {\Large \textbf{Trabajo Práctico N°1} \\[0.3cm]}
+    {\Large \textbf{AO Ideal: Circuitos Analógicos Lineales y No Lineales} \\[0.3cm]}
+    \rule{\textwidth}{0.5pt} \\[1cm]
+
+\begin{tabular}{l l}
+\textbf{Profesor Titular:} & Dr. Ing. Ferreyra Pablo \\
+\textbf{Profesor Adjunto:} & Ing. Reale Cesar \\
+\\
+\textbf{Alumnos:} & Dávila Tomassi, Carlos Valentino \\
+ & Mendes Rosa, Agustín \\
+ & Monja, Ernesto Joaquín \\
+\end{tabular}\\[3cm]
+
+{\centering
+Año 2025
+\par}
+
+\end{titlepage}
+
+% Índice
+\tableofcontents
+\newpage
+
+\indent
+
+\section{Circuito I: Amplificador Diferencial}
+La distribución de componentes en este circuito permite amplificar la diferencia entre dos señales de entrada y rechazar el componente común (ruido o interferencias compartidas), es ampliamente usada en medición de señales pequeñas provenientes de sensores y para aislar la señal útil del ruido superpuesto.
+
+Éste se conforma de dos etapas de amplificación en configuración "no inversora", por lo que la salida se encuentra en fase con la señal de entrada, además de tener alta impedancia de entrada y baja impedancia de salida.\\
+
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}[american]
+% Primer operacional (U1A)
+\draw (3,2) node[op amp] (opamp1) {};
+% Entrada no inversora U1A
+\draw (opamp1.+) to[short, -o] (1,1.5) node[left] {{$v_1$}} {};
+
+% Entrada inversora U1A
+\draw (opamp1.-) -- (1,2.5) to[R,l=$R_4$] (-0.5,2.5) -- (-1,2.5) node[ground]{};
+\draw (1.5,2.5) -- (1.5,5){};
+\draw (1.5, 3.5) to[R,l=$R_2$] (4.5,3.5) -- (4.5,2) {};
+\draw (1.5,5) to[R,l=$R_1$] (4.5,5) -- (8.5,5) -- (8.5,2) {};
+
+% U1B - segundo operacional
+\draw (10,1.51) node[op amp] (opamp2) {};
+
+% Salida vo1
+\draw (4.5,3.5) to[short, -o] (5.5,3.5) node[right] {{$v_{o1}$}};
+\draw (opamp2.-) -- (8.5,2) to[R,l=$R_5$] (5,2) -- (4.2,2){};
+
+% Salida vo2
+\draw (11.2,1.51) to[short, -o] (12.2,1.5) node[right] {{$v_{o2}$}};
+\draw (8.5,3.5) to[R,l=$R_3$] (11.5, 3.5) -- (11.5,1.51) {};
+
+% Entrada no inversora U1B
+\draw (opamp2.+) to[short, -o] (8,1) node[left] {{$v_2$}} {};
+
+    \end{circuitikz}
+    \caption{Circuito 1 - Amplificador diferencial}
+    \label{fig:amp_inv}
+\end{figure}
+
+\subsection{Parámetros/Relaciones a analizar}
+\subsubsection{$v_{o1}$ y $v_{o2}$ en función de $v_1$ y $v_2$:}
+Para este análisis se aplicó Ley de Kirchoff de los nodos en las entradas inversoras de ambos amplificadores operacionales, asumiendo que $v^+ = v^-$, y que $i^-=i^+=0$, por lo que resultó:\\
+\[
+AO_1:\frac{v_1}{R_4} +\frac{v_1-v_2}{R_1} + \frac{v_1-v_{o1}}{R_2}=0
+\]
+\\
+\[
+v_{o1} = v_1\left(1+\frac{R_2}{R_1} +\frac{R_2}{R_4}\right) + v_2\left(-\frac{R_2}{R_1}\right)
+\]
+\\
+\\
+\\
+\[
+AO_2:\frac{v_2-v_{o2}}{R_3} +\frac{v_2-v_1}{R_1} + \frac{v_2-v_{o1}}{R_5}=0
+\]
+\\
+\[
+v_{o2} = v_2\left(1+\frac{R_3}{R_1} +\frac{R_3}{R_5}\right) + v_1\left(-\frac{R_3}{R_1}\right) + v_{o1}\left(-\frac{R_3}{R_5}\right)
+\]
+\\
+\[
+v_{o2} = v_2\left(1+\frac{R_3}{R_4} +\frac{R_3}{R_5} +\frac{R_3}{R_5}\frac{R_2}{R_1}\right) + v_1\left(-\frac{R_3}{R_1}-\frac{R_3}{R_5}-\frac{R_2}{R_1}\frac{R_3}{R_5}-\frac{R_2}{R_4}\frac{R_3}{R_5}\right)
+\]
+\\
+
+Por lo tanto, asumiendo que todos los resistores son iguales, las ecuaciones se reducen a:
+\\
+\[
+v_{o1} = 3v_1 - v_2
+\]
+\[
+v_{o2} = -4v_1 + 4v_2
+\]
+\\
+\subsubsection{$v_{o1}$ y $v_{o2}$ en función de $v_d$ y $v_c$:}
+Para obtener las expresiones de salida según $v_d$ y $v_c$, primero se plantean éstas últimas en función de $v_1$ y $v_2$, como se muestra a continuación:\\
+\[
+v_d = v_2 - v_1
+\]
+\[
+v_c = \frac{v_1 + v_2}{2}
+\]\\
+Ahora, partiendo de que la tensión de salida puede expresarse como una combinación lineal genérica de las entradas, se llegó a las siguientes equivalencias:
+\\
+\[
+v_o = \alpha v_1 + \beta v_2
+\]
+\[
+v_o = \alpha v_1 + \beta v_2 +\beta v_1 - \beta v_1 \hspace{2cm} v_o = \alpha v_1 + \beta v_2 +\alpha v_2 - \alpha v_2
+\]
+\[
+v_o = (\alpha + \beta) v_1 +\beta v_d \hspace{2cm} v_o = (\alpha + \beta) v_2 - \alpha v_d
+\]\\
+Sumando ambas expresiones resulta:\\
+\[
+2v_o = (\alpha + \beta)(v_1 + v_2) + (\beta - \alpha)v_d
+\]
+\[
+v_o = (\alpha + \beta)\frac{(v_1 + v_2)}2 - \frac{(\alpha - \beta)}2v_d
+\]
+\[
+v_o = (\alpha + \beta)v_c - \frac{(\alpha - \beta)}2v_d
+\]
+\\
+Por lo tanto, para el caso del circuito 1, se obtiene:
+\\
+\[
+v_{o1} = (3 + (-1))v_c - \frac{(3 - (-1))}2v_d \hspace{2cm} v_{o2} = ((-4) + 4)v_c - \frac{((-4) - 4)}2v_d 
+\]
+\\
+\[
+v_{o1} = 2v_c - 2v_d \hspace{2cm} v_{o2} = 0v_c +4v_d 
+\]
+\\
+\subsubsection{Impedancia vista por las fuentes de señal:}
+Tomando un comportamiento ideal en los amplificadores operacionales, se asume $i^-=i^+=0$. De esta manera, definiendo a la impedancia de entrada para ambas fuentes de señal como el límite entre la relación de tensión y corriente, ésta resulta infinita:
+\\
+\[
+Z_i = \lim_{i_i\to0} \frac{v_i}{i_i}= \infty
+\]
+\\
+
+\subsection{Simulaciones:}
+Se utilizó el programa LTspice para realizar simulaciones de salidas ante distintas configuraciones de entradas que se detallarán a continuación. En la siguiente figura podemos ver el diagrama circuital del mismo:
+\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Circuito1.png}
+    \caption{Diagrama del amplificador diferencial en LTspice.} 
+\end{figure}
+
+       
+    
+    
+
+\subsubsection{$v_{o1}$ y $v_{o2}$ en función de $v_1$ (modo diferencial):}
+
+Se realizó un barrido de tensión continua para $v_1$, de $-10 [V]$ a $10 [V]$, a continuación se muestran los resultados:
+\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{barrido_v1.png} 
+    \caption{$v_{o1}$ y $v_{o2}$ para un barrido de $v_1$.} 
+\end{figure}
+
+
+Es posible observar que se cumplen las ecuaciones teóricas descritas anteriormente referidas a $v_1$ con $v_2 = 0$.
+\\
+
+\subsubsection{$v_{o1}$ y $v_{o2}$ en función de $v_2$ (modo diferencial):}
+
+Luego se realizó un barrido de tensión continua para $v_2$, también de $-10 [V]$ a $10 [V]$, a continuación se muestran los resultados:
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{barrido_v2.png} 
+    \caption{$v_{o1}$ y $v_{o2}$ para un barrido de $v_2$.} 
+\end{figure}
+
+
+De nuevo se puede observar que se cumplen las ecuaciones teóricas descritas anteriormente referidas ahora a $v_2$ con $v_1 = 0$, sin embargo también logra verse un rango donde la primer etapa no opera linealmente, ya que $v_{o1}$ para $|v_2|>2 [V]$ se enclava en un valor constante.
+\\
+
+\subsubsection{$v_{o1}$ y $v_{o2}$ en función de $v_2 = v_1$ (modo común):}
+
+Finalmente se realizó un barrido de tensión continua de $-10 [V]$ a $10 [V]$ para ambas fuentes de señal, a continuación se muestran los resultados:
+\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{barrido_vc.png} 
+    \caption{$v_{o1}$ y $v_{o2}$ para un barrido de $v_2 = v_1$.} 
+\end{figure}
+
+
+En este caso es posible observar que se cumplen las ecuaciones teóricas de las salidas respecto de $v_c$ con $v_d=0$ para un rango de $v_c: [-5;4] [V]$. Fuera de este rango el comportamiento no es el que se describe en las ecuaciones.
+\\
+
+\subsubsection{Impedancias de entrada:}
+
+Para simular estos valores en módulo y fase, se realizó un barrido de frecuencia de $1 [Hz]$ a $10 [MHz]$, tomando para el análisis la relación algebraica entre la tensión y la corriente de los nodos de entrada, resultando en las siguientes gráficas:
+\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{barrido_z1.png} 
+    \caption{Bode de $Z_{i1}$ y $Z_{i2}$.} 
+\end{figure}
+
+
+Se observa que las mismas poseen un valor alto, como era de esperar, comenzando en $8.3 [G\Omega]$ para $Z_{i1}$ y $8.7 [G\Omega]$ para $Z_{i2}$.
+
+Para el caso de $Z_{i1}$ este valor se mantiene constante hasta una frecuencia de alrededor de $50 [Hz]$, donde luego cae hasta llegar a hacerse nula. Mientras que para el caso de $Z_{i2}$ se ve una alta subida a partir de una frecuencia de $1 [kHz]$ hasta un valor de $12.5 [G\Omega]$ con una posterior caída de mucha pendiente.
+
+Respecto a la fase, es posible ver que para $Z_{i1}$ no se mantiene en constante a medida que se aumenta la frecuencia sino que comienza a moverse en una frecuencia de $10 [Hz]$ hasta llegar a $-80°$ y luego vuelve, y para $Z_{i2}$, ésta comienza a escalar a partir de $1 [kHz]$ y alcanza los $360°$ en $10 [MHz]$
+\\
+
+\subsubsection{Respuesta en frecuencia:}
+
+Se realizaron barridos de frecuencia de $1 [Hz]$ a $10 [MHz]$, primero con $v_1=0$ y $v_1$ como una senoidal de amplitud $1$, para así estudiar la respuesta en frecuencia del modo diferencial, y posteriormente con $v_1=v_2$, para estudiarla en modo común, lo que resultó en las siguientes gráficas:
+\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Bode_vd.png} 
+    \caption{Bode de $v_{o1}$ y $v_{o2}$ para $v_d=(-1)$.} 
+\end{figure}
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Bode_vc.png} 
+    \caption{Bode de $v_{o1}$ y $v_{o2}$ para $v_c$.} 
+\end{figure}
+
+
+Logra observarse que para el modo diferencial se tiene una ganancia a la salida del amplificador ($v_{o2}$) de $12[dB]$ ($3.98[veces]$) y un ancho de banda de $200 [kHz]$, mientras que se tiene una ganancia de $9.4[dB]$ ($2.95[veces]$) para ($v_{o1}$).
+
+Para el modo común, la $RRMC$ que se supone infinita cambia con la frecuencia, hasta que cerca de $120[kHz]$ se observa que $A_c$ alcanza los $0[dB]$, es decir que no hay atenuación y luego pasa a amplificar el modo común, hasta volver a caer.
+\\
+
+\subsection{Mediciones:}
+Posteriormente, se procedió a armar el circuito y medir en el laboratorio los mismos parámetros que fueron simulados anteriormente:
+\\
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Circuito_armado.png}
+    \caption{Amplificador diferencial armado en placa perforada.} 
+\end{figure}
+
+
+Fueron realizadas las pruebas que se hicieron en las simulaciones, especificadas en el pie de cada figura a continuación:
+\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Barrido_v1_armado.png}
+    \caption{$v_{o1}$ y $v_{o2}$ para un barrido de $v_1$.} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Barrido_v2_armado.png}
+    \caption{$v_{o1}$ y $v_{o2}$ para un barrido de $v_2$.} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Barrido_vc_armado.png}
+    \caption{$v_{o1}$ y $v_{o2}$ para un barrido de $v_c$.} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Bode_vd_armado.png}
+    \caption{Bode de $v_{o1}$ y $v_{o2}$ para $v_d$.} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Bode_vc_armado.png}
+    \caption{Bode de $v_{o1}$ y $v_{o2}$ para $v_c$.} 
+\end{figure}
+
+
+Observando las mediciones, es posible determinar que las pocas diferencias encontradas de los barridos de continua se dan debido a la cantidad finita y espaciada de puntos que se tomaron para trazar las curvas.
+
+En cuanto a los diagramas de Bode, se tiene que se respetan los valores de ganancia en ambos, sin embargo el ancho de banda del amplificador se reduce en una década debido a una deformación de la onda a una frecuencia de $15[kHz]$ (figura adjunta a continuación), se le atribuye esta condición al valor de Slew Rate del componente, el cual es $0.3 [V/\mu s]$.
+\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Deformacion_de_onda.png}
+    \caption{Deformación de onda en $15[kHz]$ para $v_d$.} 
+\end{figure}
+
+
+\section{Análisis de Resultados}
+Se presenta a continuación una tabla que resume los resultados obtenidos en las mediciones y simulaciones para las zonas donde el amplificador se comporta según las ecuaciones:
+\\
+
+\begin{table}[H]
+\centering
+
+\begin{tabular}{|c|c|c|c|}
+\hline
+ \textbf{Parámetro} & \textbf{Cálculo} & \textbf{Simulación} & \textbf{Medición} \\ \hline
+$v_{o1(v_1)}$ [veces] & $3$ & $3$ & $2.5$ \\ \hline
+$v_{o1(v_2)}$ [veces] & $-1$ & $-1$ & $-0.8$ \\ \hline
+$v_{o2(v_1)}$ [veces] & $-4$ & $-4$ & $-3.75$ \\ \hline
+$v_{o2(v_2)}$ [veces] & $4$ & $4$ & $3.5$ \\ \hline
+$v_{o1(v_c)}$ [veces] & $2$ & $2$ & $2$ \\ \hline
+$v_{o2(v_c)}$ [veces] & $0$ & $0$ & $0$ \\ \hline
+$BW$ & $-$ & $200[kHz]$ & $22[kHz]$ \\ \hline
+\end{tabular}%
+\caption{Resumen de resultados obtenidos.}
+\end{table}
+
+
+Los resultados obtenidos muestran una buena concordancia general entre el comportamiento teórico, las simulaciones y las mediciones experimentales en el rango donde los amplificadores operacionales trabajan en régimen lineal.
+Las pequeñas desviaciones observadas pueden explicarse por las limitaciones prácticas del componente utilizado (LM324) y por efectos de montaje y entorno.
+
+En primer lugar, las relaciones de ganancia de tensión medidas para cada combinación de entradas coinciden con las expresiones teóricas dentro de un margen razonable.
+
+En el dominio de frecuencia, la simulación predijo un ancho de banda de aproximadamente $200 [kHz]$ para el modo diferencial y una ganancia de $12 [dB]$, mientras que en la práctica el límite de banda se redujo a unos $22 [kHz]$.
+
+Durante el barrido de frecuencia, a partir de $10–15 [kHz]$ se observó una deformación de la onda senoidal, manifestada como un redondeo y posterior aplanamiento de los picos. Este fenómeno se debe principalmente a la limitación por Slew Rate del LM324 ($0.3 [V/\mu s]$), que impide que la salida siga la pendiente instantánea de la señal ante altas velocidades de variación de ella.
+
+El estudio del modo común confirmó un adecuado rechazo dentro del rango lineal, aunque con una disminución del $RRMC$ a altas frecuencias, tal como se predijo en la simulación.
+
+En cuanto a la impedancia de entrada, los valores del orden de gigaohms observados en la simulación son coherentes con el modelo ideal calculado.
+
+En conclusión, el circuito cumplió con las funciones esperadas de amplificador diferencial: alta impedancia de entrada, amplificación del modo diferencial y atenuación del modo común, con un comportamiento lineal acotado por las limitaciones reales del LM324 y del montaje experimental.
+
+\newpage
+
+\section{Circuito III: Rectificador de Precisión}
+
+El circuito rectificador de precisión utiliza dos LM324 y dos diodos 1N4148 para obtener una rectificación exacta de señales de baja amplitud, superando las limitaciones de los rectificadores convencionales. En un rectificador simple con diodos, la caída de tensión directa ($v_d = 0.7 [V]$ para silicio) impide una rectificación adecuada de señales inferiores a dicho valor. Mediante la realimentación del amplificador operacional, el circuito compensa esa caída, logrando que el diodo conduzca incluso para tensiones de entrada muy pequeñas.
+\\
+
+
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}[american]
+% Primer operacional (U1A)
+\draw (3,2) node[op amp] (opamp1) {};
+% Entrada no inversora U1A
+\draw (opamp1.+) to[short, -o] (1,1.5) node[left] {{$v_{in}$}} {};
+
+% Entrada inversora U1A
+\draw (opamp1.-) -- (1,2.5) to[R,l=$R_3$] (-0.5,2.5) -- (-1,2.5) node[ground]{};
+\draw (1.5,2.5) -- (1.5,5){};
+\draw (4.5,2) -- (4.5,3.5) to[D,l=$D_2$] (1.5,3.5)  {};
+\draw (1.5,5) to[R,l=$R_1$] (4.5,5) to[R,l=$R_2$] (8.5,5) -- (8.5,2) {};
+\draw (4.5,5) to[D,l=$D_1$] (4.5,3.5)  {};
+
+% U1B - segundo operacional
+\draw (10,1.51) node[op amp] (opamp2) {};
+
+% Salida vo1
+\draw (4.5,2) to[short, -o] (5.5,2) node[right] {{$v_{o1}$}};
+\draw (opamp2.-) -- (8.5,2) (4.5,2) -- (4.2,2){};
+
+% Salida vo2
+\draw (11.2,1.51) to[short, -o] (12.2,1.5) node[right] {{$v_{o2}$}};
+\draw (8.5,3.5) to[R,l=$R_4$] (11.5, 3.5) -- (11.5,1.51) {};
+
+% Entrada no inversora U1B
+\draw (opamp2.+) to[short, -o] (8,1) node[left] {{$v_{in}$}} {};
+
+    \end{circuitikz}
+    \caption{Circuito 3 - Rectificador de Precisión}
+    \label{fig:amp_inv}
+\end{figure}
+\\
+
+\subsection{Parámetros/Relaciones a analizar}
+\subsubsection{$v_{o1}$ y $v_{o2}$ en función de $v_{in}$ para $v_{in}>0$:}
+Para este análisis primero se redujo el circuito al equivalente según el diodo que conduzca en este semiciclo, el cual en este caso es $D_2$, mientras que $D_1$ se encuentra en circuito abierto, por lo que resultó:
+\\
+
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}[american]
+% Primer operacional (U1A)
+\draw (3,2) node[op amp] (opamp1) {};
+% Entrada no inversora U1A
+\draw (opamp1.+) to[short, -o] (1,1.5) node[left] {{$v_{in}$}} {};
+
+% Entrada inversora U1A
+\draw (opamp1.-) -- (1,2.5) to[R,l=$R_3$] (-0.5,2.5) -- (-1,2.5) node[ground]{};
+\draw (1.5,2.5) -- (1.5,5){};
+\draw (4.5,2) -- (4.5,3.5) -- (1.5,3.5)  {};
+\draw (1.5,5) to[R,l=$R_1$] (4.5,5) to[R,l=$R_2$] (8.5,5) -- (8.5,2) {};
+
+% U1B - segundo operacional
+\draw (10,1.51) node[op amp] (opamp2) {};
+
+% Salida vo1
+\draw (4.5,2) to[short, -o] (5.5,2) node[right] {{$v_{o1}$}};
+\draw (opamp2.-) -- (8.5,2) (4.5,2) -- (4.2,2){};
+
+% Salida vo2
+\draw (11.2,1.51) to[short, -o] (12.2,1.5) node[right] {{$v_{o2}$}};
+\draw (8.5,3.5) to[R,l=$R_4$] (11.5, 3.5) -- (11.5,1.51) {};
+
+% Entrada no inversora U1B
+\draw (opamp2.+) to[short, -o] (8,1) node[left] {{$v_{in}$}} {};
+
+    \end{circuitikz}
+    \caption{Rectificador de Precisión para $v_{in}>0$}
+    \label{fig:amp_inv}
+\end{figure}
+\\
+
+A partir de esto, considerando comportamiento ideal en los amplificadores ($v^+ = v^-$), se tiene que ambas entradas no inversoras se encuentran al mismo potencial ($v_{in}$), de manera que no fluye corriente por la rama de $R_1$ y $R_2$.
+
+Haciendo un análisis a partir de un modelo genérico de un amplificador en configuración no inversora, se pueden concluir las siguientes ecuaciones:
+\\
+\[
+AO_1: v_{o1}= \lim_{R_f\to0} \left(1 + \frac{R_f}{R_3}\right)v_{in} = v_{in}
+\]
+\\
+
+\[
+AO_2: v_{o2}= \lim_{R_i\to\infty} \left(1 + \frac{R_4}{R_i}\right)v_{in} = v_{in}
+\]
+\\
+
+Por lo tanto, se puede concluir que en el semiciclo positivo de la señal de entrada, el circuito hace que ambas salidas copien a dicha entrada.
+\\
+
+\subsubsection{$v_{o1}$ y $v_{o2}$ en función de $v_{in}$ para $v_{in}<0$:}
+De nuevo se redujo el circuito al equivalente según el diodo que conduzca en este semiciclo, el cual en este caso es $D_1$, mientras que $D_2$ se encuentra en circuito abierto, por lo que resultó:
+\\
+
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}[american]
+% Primer operacional (U1A)
+\draw (3,2) node[op amp] (opamp1) {};
+% Entrada no inversora U1A
+\draw (opamp1.+) to[short, -o] (1,1.5) node[left] {{$v_{in}$}} {};
+
+% Entrada inversora U1A
+\draw (opamp1.-) -- (1,2.5) to[R,l=$R_3$] (-0.5,2.5) -- (-1,2.5) node[ground]{};
+\draw (1.5,2.5) -- (1.5,5){};
+\draw (4.5,2) -- (4.5,3.5){};
+\draw (1.5,5) to[R,l=$R_1$] (4.5,5) to[R,l=$R_2$] (8.5,5) -- (8.5,2) {};
+\draw (4.5,5) -- (4.5,3.5)  {};
+
+% U1B - segundo operacional
+\draw (10,1.51) node[op amp] (opamp2) {};
+
+% Salida vo1
+\draw (4.5,2) to[short, -o] (5.5,2) node[right] {{$v_{o1}$}};
+\draw (opamp2.-) -- (8.5,2) (4.5,2) -- (4.2,2){};
+
+% Salida vo2
+\draw (11.2,1.51) to[short, -o] (12.2,1.5) node[right] {{$v_{o2}$}};
+\draw (8.5,3.5) to[R,l=$R_4$] (11.5, 3.5) -- (11.5,1.51) {};
+
+% Entrada no inversora U1B
+\draw (opamp2.+) to[short, -o] (8,1) node[left] {{$v_{in}$}} {};
+
+    \end{circuitikz}
+    \caption{Rectificador de Precisión para $v_{in}<0$}
+    \label{fig:amp_inv}
+\end{figure}
+\\
+
+Se logra observar que en la primer etapa el amplificador se encuentra en configuración no inversora, y su salida entra a la entrada inversora de la segunda etapa a través de $R_2$. Entonces es posible escribir:
+\\
+\[
+AO_1: v_{o1}= \left(1+\frac{R_1}{R_3}\right)v_{in} 
+\]
+\\
+
+Y la segunda etapa puede analizarse por método de tensiones en los nodos para la entrada inversora:
+\\
+
+\[
+AO_2: \frac{v_{in}-v_{o1}}{R_2} + \frac{v_{in}-v_{o2}}{R_4} = 0
+\]
+\\
+\[
+v_{o2} = R_4\left(\frac{v_{in}-v_{o1}}{R_2} + \frac{v_{in}}{R_4}\right)
+\]
+\\
+\[
+v_{o2} = \left(\frac{R_4}{R_2}v_{in} -\frac{R_4}{R_2} v_{o1} + v_{in}\right)
+\]
+\\
+\[
+v_{o2} = v_{in}\left(1 +\frac{R_4}{R_2}\right) + v_{o1}\left(-\frac{R_4}{R_2}\right) 
+\]
+\\
+
+Por lo que reemplazando $v_{o1}$ por lo obtenido en el análisis de $AO_1$, resulta:
+\\
+
+\[
+v_{o2} = v_{in}\left(1 +\frac{R_4}{R_2}\right) - \left(v_{in}\left(1+\frac{R_1}{R_3}\right)\right)\left(\frac{R_4}{R_2}\right) 
+\]
+\\
+\[
+v_{o2} = v_{in}\left(1 -\frac{R_1R_4}{R_2R_3}\right)
+\]
+\\
+
+Reemplazando por los valores de resistencias dados como dato, y resumiendo las ecuaciones obtenidas a continuación, es posible escribir:
+\\
+\[
+v_{o1}(v_{in}) =
+\begin{cases}
+v_{in}\left(1 + \dfrac{R_1}{R_3}\right) = 2v_{in} \hspace{0.5cm} & \text{: para } v_{in} < 0 \\[8pt]
+\hspace{1.9cm}v_{in} \hspace{2cm} & \text{: para } v_{in} > 0
+\end{cases}
+\]
+\\
+
+\[
+v_{o2}(v_{in}) =
+\begin{cases}
+v_{in}\!\left(1 - \dfrac{R_4 R_1}{R_2 R_3}\right) = -v_{in}\hspace{0.2cm} & \text{: para } v_{in} < 0 \\[8pt]
+\hspace{1.9cm}v_{in}\hspace{2cm} & \text{: para } v_{in} > 0
+\end{cases}
+\]
+\\
+
+\subsection{Simulaciones:}
+Se utilizó el programa LTspice para realizar simulaciones de salidas ante distintas configuraciones de entradas que se detallarán a continuación. En la siguiente figura podemos ver el diagrama circuital del mismo:
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Circuito3.png}
+    \caption{Diagrama del rectificador de precisión en LTspice.} 
+\end{figure}
+\\
+
+\subsubsection{$v_{o1}$ y $v_{o2}$ en función de $v_{in}$:}
+
+Se realizó un barrido de tensión continua para $v_{in}$, de $-10 [V]$ a $10 [V]$, a continuación se muestran los resultados de ambas salidas:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Barrido_vin.png} 
+    \caption{$v_{o1}$ (verde) y $v_{o2}$ (azul) para un barrido de $v_{in}$ (rojo).} 
+\end{figure}
+
+
+Es posible observar que a grosomodo se cumplen las ecuaciones teóricas descritas anteriormente mientras se encuentre en el rango lineal, es decir, con $v_{in}:[-5;8]$. 
+También pueden verse alinealidades cerca del cero, esto debido a que los diodos modelados en la simulación no son ideales y generan este tipo de formas en la salida.
+\\
+
+\subsubsection{Análisis temporal de $v_{o2}$ en función de $v_{in}$:}
+
+Se simuló la salida ante una entrada senoidal de $1[kHz]$ de distintas amplitudes de $v_{in}$ ($50 [mV], 1[V], 4.5[V], 9[V]$), a continuación se muestran los resultados de salida $v_{o2}$:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Temp_50mV.png} 
+    \caption{$v_{o2}$ (verde) para una amplitud de $v_{in}$ de $50[mV]$ (rojo).} 
+\end{figure}
+\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Temp_1V.png} 
+    \caption{$v_{o2}$ (verde) para una amplitud de $v_{in}$ de $1[V]$ (rojo).} 
+\end{figure}
+\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Temp_4.5V.png} 
+    \caption{$v_{o2}$ (verde) para una amplitud de $v_{in}$ de $4.5[V]$ (rojo).} 
+\end{figure}
+\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Temp_9V.png} 
+    \caption{$v_{o2}$ (verde) para una amplitud de $v_{in}$ de $9[V]$ (rojo).} 
+\end{figure}
+
+
+\subsection{Mediciones:}
+Posteriormente, se procedió a armar el circuito y medir en el laboratorio los mismos parámetros que fueron simulados anteriormente:
+\\
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Circuito3_armado.jpg}
+    \caption{Rectificador de precisión armado en placa perforada.} 
+\end{figure}
+
+
+Fueron realizadas las pruebas que se hicieron en las simulaciones, especificadas en el pie de cada figura a continuación:
+\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Barrido_vin_armado.png}
+    \caption{$v_{o1}$ y $v_{o2}$ para un barrido de $v_{in}$.} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Temp_50mV_armado.jpg}
+    \caption{$v_{o2}$ (azul) para una amplitud de $v_{in}$ de $50[mV]$ (amarillo).} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Temp_1V_armado.jpg}
+    \caption{$v_{o2}$ (azul) para una amplitud de $v_{in}$ de $1[V]$ (amarillo).} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Temp_4.5V_armado.jpg}
+    \caption{$v_{o2}$ (azul) para una amplitud de $v_{in}$ de $4.5[V]$ (amarillo).} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Temp_9V_armado.jpg}
+    \caption{$v_{o2}$ (azul) para una amplitud de $v_{in}$ de $9[V]$ (amarillo).} 
+\end{figure}
+
+
+\section{Análisis de Resultados}
+Se presenta a continuación una tabla que resume los resultados obtenidos en las mediciones y simulaciones para las zonas donde el amplificador se comporta según las ecuaciones, y los límites de operación lineal del mismo:
+\\
+
+\begin{table}[H]
+\centering
+
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Parámetro} & \textbf{Cálculo} & \textbf{Simulación} & \textbf{Medición} \\ \hline
+$v_{o1(v_{in}<0)}$ [veces] & $2$ & $2.125$ & $2.25$ \\ \hline
+$v_{o1(v_{in}>0)}$ [veces] & $1$ & $1.25$ & $1.125$ \\ \hline
+$v_{o2(v_{in}<0)}$ [veces] & $-1$ & $-1$ & $-1.2$ \\ \hline
+$v_{o2(v_{in}>0)}$ [veces] & $1$ & $1$ & $1$ \\ \hline
+$Limite\ de\ amplitud\ (v_{in}>0) [V]$ & $-$ & $8$ & $8.5$ \\ \hline
+$Limite\ de\ amplitud\ (v_{in}<0) [V]$ & $-$ & $-4.8$ & $-4$ \\ \hline
+\end{tabular}%
+\caption{Resumen de resultados obtenidos.}
+\end{table}
+
+Los resultados obtenidos presentan una muy buena concordancia entre el análisis teórico, las simulaciones y las mediciones experimentales, especialmente en el rango en que los amplificadores operacionales trabajan dentro de su zona lineal y los diodos se comportan como ideales.
+
+En primer lugar, se observa que para el semiciclo positivo ($v_{in} > 0$) las tensiones de salida $v_{o1}$ y $v_{o2}$ siguen casi a la perfección a la señal de entrada, tal como se deduce teóricamente. Las pequeñas diferencias entre los valores calculados, simulados y medidos (1, 1.25 y 1.125 [veces], respectivamente) pueden atribuirse a la caída de tensión directa de los diodos reales (aunque reducida) y a la presencia de pequeñas tensiones de offset en los amplificadores operacionales. 
+
+En el semiciclo negativo ($v_{in} < 0$), el circuito también reproduce el comportamiento esperado: $v_{o1}$ duplica la amplitud negativa de la señal de entrada y $v_{o2}$ invierte su polaridad, rectificando la forma de onda. En este caso, las diferencias observadas entre simulación y medición se deben principalmente a la no idealidad del LM324.
+
+Respecto a los límites de operación lineal, tanto en simulación como en laboratorio se observa que el circuito mantiene su comportamiento esperado hasta aproximadamente $v_{in} = 8[V]$ en el semiciclo positivo y $v_{in} = -4[V]$ en el negativo. Fuera de estos valores, el operacional entra en saturación, limitando la amplitud de salida. 
+
+Durante las pruebas temporales, se verificó que el circuito logra una rectificación precisa con muy pequeñas alinealidades cerca del cruce por cero, causadas por el tiempo de recuperación de los diodos (pasando de corte a conducción y viceversa), sin embargo aún así demostrando la efectividad del diseño.
+
+En conclusión, el circuito rectificador de precisión cumplió satisfactoriamente su función de eliminar el error introducido por la caída de los diodos, mostrando un comportamiento estable y predecible tanto en simulación como en medición. Las diferencias menores observadas responden a las limitaciones reales de los componentes activos y pasivos, sin afectar significativamente la precisión general del rectificado.
+
+\end{document}
