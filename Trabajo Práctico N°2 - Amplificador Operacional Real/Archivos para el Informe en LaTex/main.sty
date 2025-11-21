@@ -1,0 +1,1209 @@
+\documentclass[12pt,a4paper]{article}
+
+% Paquetes básicos
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{setspace}
+\usepackage{titlesec}
+
+\onehalfspacing
+
+% Para circuitos
+\usepackage{circuitikz}
+
+% Datos
+\author{Nombre y Apellido \\ Legajo: XXXXX}
+\date{\today}
+
+\begin{document}
+
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{4}
+\titleformat{\paragraph}[block]
+  {\normalfont\normalsize\bfseries}
+  {\theparagraph}                
+  {1em}                            
+  {}
+
+% Carátula personalizada
+\begin{titlepage}
+    \centering
+    \includegraphics[width=0.25\textwidth]{escudo.png} 
+    \hspace{1cm}
+    \includegraphics[width=0.3\textwidth]{download.png} \\[1cm]
+
+    {\large \textbf{UNIVERSIDAD NACIONAL DE CÓRDOBA} \\[0.5cm]}
+    {\large \textbf {FACULTAD DE CIENCIAS EXACTAS, FÍSICAS Y NATURALES} \\[1cm]}
+    {\Large SÍNTESIS DE REDES ACTIVAS \\[1cm]}
+
+    \rule{\textwidth}{0.5pt} \\[0.5cm]
+    {\Large \textbf{Trabajo Práctico N°2} \\[0.3cm]}
+    {\Large \textbf{AO Real: Errores} \\[0.3cm]}
+    \rule{\textwidth}{0.5pt} \\[1cm]
+
+\begin{tabular}{l l}
+\textbf{Profesor Titular:} & Dr. Ing. Ferreyra Pablo \\
+\textbf{Profesor Adjunto:} & Ing. Reale Cesar \\
+\\
+\textbf{Alumnos:} & Dávila Tomassi, Carlos Valentino \\
+ & Mendes Rosa, Agustín \\
+ & Monja, Ernesto Joaquín \\
+\end{tabular}\\[3cm]
+
+{\centering
+Año 2025
+\par}
+
+\end{titlepage}
+
+% Índice
+\tableofcontents
+\newpage
+
+\indent
+
+\section{Circuito I: Sumador Inversor}
+El objetivo de este circuito es introducir al estudiante en el diseño, armado, medición y análisis de circuitos con amplificadores lineales, teniendo en cuenta las fuentes de error del AO real, y como se
+relacionan con las condiciones de entorno del circuito.\\
+
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}[american]
+
+\draw (7,2) node[op amp] (opamp1) {};
+% Entrada no inversora U1
+\draw (opamp1.+) to (5.5,1.5) node[ground] {};
+
+% Entrada inversora U1
+\draw (opamp1.-) -- (4.5,2.5) to[R, l=$R$, -o] (1.5,2.5) node[left]{$v_1$};
+\draw (4.5,2.5) -- (4.5,1) to [R, l=$R$, -o] (1.5,1) node[left]{$v_2$}{};
+\draw (4.5,2.5) -- (4.5,4) to [R, l=$R_f$] (9,4) --(9,2) {};
+
+% Salida U1
+\draw (8,2) to[short,-o] (9.5,2) node[right]{$v_{o}$};
+    \end{circuitikz}
+    \caption{Circuito 1 - Sumador inversor}
+\end{figure}
+
+El cual debe ser diseñado en base a los siguientes requerimientos:
+
+\begin{itemize}
+    \item Amplificador Operacional $LM324$
+    \item Alimentación $V_{cc} = 10V, V_{ss} = -10V$
+    \item Ganancia en banda media $A=\frac{v_o}{v_1}\  y\ A=\frac{v_o}{v_2}$ debe ser igual a $30 [veces]$.
+    \item $Z_i$ del amplificador no puede alterar o cargar la fuente de señal, es decir, $R_i\  \verb|<<|\  Z_{i1}\  y\  Z_{i2}$ (al menos $10 [veces]$).
+    \item Usar Resistencias $<=1 [M\Omega]$
+\end{itemize}
+
+Además, la fuente de tensión $v_1$ debe considerarse con una resistencia interna $R_i = 50 [\Omega]$ y $v_1$ con una resistencia interna $R_i = 100 [k\Omega]$.\\
+
+\subsection{Parámetros/Relaciones a analizar}
+\subsubsection{$v_o$ en función de $v_1$ y $v_2$:}
+Para este análisis idealizado, se aplicó Ley de Kirchoff de los nodos en la entradas inversora del amplificador, asumiendo que $v^+ = v^-$, y que $i^-=i^+=0$, por lo que resultó:\\
+\[
+\frac{v_1}{R} + \frac{v_2}{R} + \frac{v_o}{R_f}=0
+\]
+\\
+\[
+v_o = -\frac{R_f}{R}\left(v_1 +v_2\right)
+\]
+\\
+
+Es de interés también obtener otros parámetros para los análisis posteriores, por lo que se procede a abrir el lazo de realimentación y aplicar las fórmulas de Black, comenzando por la ganancia de lazo $T$ (notar que $v^-$ es la tensión en la terminal inversora, con un subíndice que depende del caso de análisis): \\
+
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}[american]
+
+\draw (7,2) node[op amp] (opamp1) {};
+% Entrada no inversora U1
+\draw (opamp1.+) to (5.5,1.5) node[ground] {};
+
+% Entrada inversora U1
+\draw (opamp1.-) -- (4.5,2.5) to[R, l=$R$, -o] (1.5,2.5) node[left]{$v_1$};
+\draw (4.5,2.5) -- (4.5,1) to [R, l=$R$, -o] (1.5,1) node[left]{$v_2$}{};
+\draw (4.5,2.5) -- (4.5,4) to [R, l=$R_f$, -o] (9,4) node[right]{$v_{oT}$}{};
+
+% Salida U1
+\draw (8,2) to[short,-o] (9.5,2) node[right]{$v_o$};
+    \end{circuitikz}
+    \caption{Sumador inversor con lazo de realimentación abierto}
+\end{figure}
+
+
+\[
+T = \left[\frac{v_o}{v_{oT}}\right]_{v_1=v_2=0} =\frac{(v^-_T)(-A_d)}{v_{oT}}
+\]
+\\
+\[
+T = \frac{\left(\frac{v_{oT}(R//R)}{R_f + R//R}\right)(-A_d)}{v_{oT}}
+\]
+\\
+\[
+T = \frac{(R/2)(-A_d)}{R_f + R/2} = \frac{-R.A_d}{R + 2.R_f} 
+\]
+\\
+
+Para la ganancia a lazo cerrado $A_{vf}$, se procede de la siguiente manera, aplicando teorema de superposición para las ganancias a lazo abierto:\\
+
+\[
+A_{v1} = \left[\frac{v_o}{v_1}\right]_{v_2=v_{oT}=0} =\frac{(v^-_1)(-A_d)}{v_1} = \frac{\left(\frac{v_1(R//R_f)}{R + R//R_f}\right)(-A_d)}{v_1}
+\]
+\\
+\[
+A_{v1} = \frac{(R//R_f)(-A_d)}{R + R//R_f} = \frac{\frac{R.R_f}{R+R_f}(-A_d)}{R + \frac{R.R_f}{R+R_f}} = \frac{R_f(-A_d)}{R + 2R_f}
+\]
+\\
+\[
+A_{vf1} = \frac{A_{v1}}{1-T} = \frac{\frac{R_f(-A_d)}{R + 2R_f}}{1-\frac{-R.A_d}{R + 2.R_f}} = -\frac{R_f.A_d}{R + 2.R_f+R.A_d}
+\]
+\\
+\[
+A_d \to \infty : \hspace{1cm}
+A_{vfi1} = -\frac{R_f}{R}
+\]
+\\
+
+\[
+A_{v2} = \left[\frac{v_o}{v_2}\right]_{v_1=v_{oT}=0} =\frac{(v^-_2)(-A_d)}{v_2} = \frac{\left(\frac{v_2(R//R_f)}{R + R//R_f}\right)(-A_d)}{v_2} = \frac{R_f(-A_d)}{R + 2R_f}
+\]
+\\
+\[
+A_{vf2} = \frac{A_{v2}}{1-T} = \frac{\frac{R_f(-A_d)}{R + 2R_f}}{1-\frac{-R.A_d}{R + 2.R_f}} = -\frac{R_f.A_d}{R + 2.R_f+R.A_d}
+\]
+\\
+\[
+A_d \to \infty : \hspace{1cm}
+A_{vfi2} = -\frac{R_f}{R}
+\]
+\\
+
+
+Tal que se puede escribir la expresión de la salida ideal a lazo cerrado:
+\\
+\[
+v_{ofi} = A_{vfi1}.v_1 + A_{vfi2}.v_2 = -\frac{R_f}{R}(v_1 + v_2)
+\]
+\\
+
+Y su forma real (no ideal):
+\\
+\[
+v_{of} = A_{vf1}.v_1 + A_{vf2}.v_2 = -\frac{R_f.A_d}{R + 2.R_f+R.A_d}(v_1 + v_2)
+\]
+\\
+
+
+\subsubsection{Errores DC}
+\paragraph{Tensión de Offset - $V_{os}$:}
+Para comenzar este análisis, se coloca una fuente de tensión con valor $V_{os}$ en el terminal no inversor:
+\\
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}[american]
+
+\draw (7,2) node[op amp] (opamp1) {};
+% Entrada no inversora U1
+\draw (opamp1.+) to[short, -o] (5.5, 1.5) node[left]{$V_{os}$} {};
+
+% Entrada inversora U1
+\draw (opamp1.-) -- (4.5,2.5) to[R, l=$R$] (1.5,2.5) node[ground]{};
+\draw (4.5,2.5) -- (4.5,1) to [R, l=$R$] (1.5,1) node[ground]{};
+\draw (4.5,2.5) -- (4.5,4) to [R, l=$R_f$, -o] (9,4) node[right]{$v_{oT}$}{};
+
+% Salida U1
+\draw (8,2) to[short,-o] (9.5,2) node[right]{$v_{o}$};
+    \end{circuitikz}
+    \caption{Sumador inversor: Análisis $V_{os}$}
+\end{figure}
+
+
+\[
+\Delta v_{o_{V_{os}}} = \frac{\left[\frac{v_o}{V_{os}}\right]_{LA}}{1-T}.V_{os} = \frac{A_d.V_{os}}{1-\frac{-R.A_d}{R + 2.R_f} }
+\]
+\\
+\[
+A_d \to \infty : \hspace{1cm}
+\Delta v_{o_{V_{os}}} = \frac{R + 2.R_f}{R}V_{os} = \left(1+\frac{2.R_f}{R}\right)V_{os}
+\]
+\\
+
+Es posible ver cómo ahora el circuito se comporta como un amplificador no inversor con $v^+ = V_{os}$.\\
+
+\paragraph{Corrientes de Polarización - $I_{pol}$:}
+
+Para analizar el efecto de que las corrientes de polarización del amplificador operacional no sean nulas, se modelan fuentes de corriente en ambos terminales, teniendo entonces dos corrientes entrantes en los terminales de entrada:\\
+
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}[american]
+
+\draw (7,2) node[op amp] (opamp1) {};
+% Entrada no inversora U1
+\draw (opamp1.+) -- (5.5, 1.5) node[ground] {};
+
+% Entrada inversora U1
+\draw (opamp1.-) -- (4.5,2.5) to[R, l=$R$] (1.5,2.5) node[ground]{};
+\draw (4.5,2.5) -- (4.5,1) to [R, l=$R$] (1.5,1) node[ground]{};
+\draw (4.5,2.5) -- (4.5,4) to [R, l=$R_f$, -o] (9,4) node[right]{$v_{oT}$}{};
+
+% Salida U1
+\draw (8,2) to[short,-o] (9.5,2) node[right]{$v_{o}$};
+    \end{circuitikz}
+    \caption{Sumador inversor: Análisis $I_{pol}$}
+\end{figure}
+
+\[
+\Delta v_{o_{I_{pol}}} = \frac{\left[\frac{v_o}{I_{pol^+}}\right]_{LA}}{1-T}.I_{pol^+} + \frac{\left[\frac{v_o}{I_{pol^-}}\right]_{LA}}{1-T}.I_{pol^-} 
+\]
+\\
+\[
+\left[\frac{v_o}{I_{pol^+}}\right]_{LA} = 0
+\]
+\\
+\[
+\left[\frac{v_o}{I_{pol^-}}\right]_{LA} = (R//R//R_f).A_d = \frac{(R/2).R_f}{(R/2) + R_f}.A_d = \frac{R.R_f}{R + 2R_f}.A_d
+\]
+\\
+\[
+\Delta v_{o_{I_{pol}}} = \frac{\left(\frac{R.R_f}{R + 2R_f}.A_d\right)}{1-\frac{-R.A_d}{R + 2.R_f}}.I_{pol^-} 
+\]
+\\
+\[
+    A_d \to \infty : \hspace{1cm}
+\Delta v_{o_{I_{pol}}} = R_f.I_{pol^-} 
+\]
+\\
+
+Se observa que, como el terminal no inversor está a masa, no se genera tensión que se traduzca en un error a la salida debido a $I_{pol^+}$. No así para el terminal negativo, caso para el cual se obtuvo el error que genera.
+\\
+
+\paragraph{Ganancia Diferencial No Ideal - $A_d < \infty$:}
+
+Un amplificador operacional real no posee ganancia diferencial infinita, esto genera que se desvíe de la ganancia ideal $A_{vfi}$ calculada anteriormente, sino que resulte en $A_{vf}$, generando un error a la salida dado por la siguiente relación:
+\\
+\[
+\Delta v_{o_{(A_d<\infty)}} = \frac{\left[\frac{v_o}{v_d}\right]_{LA}}{1-T}v_{d_{max}} = \frac{A_d}{1-\frac{-R.A_d}{R + 2.R_f}}\frac{FS}{A_d}
+\]
+\\
+\[
+\Delta v_{o_{(A_d<\infty)}} = \left(1+\frac{2.R_f}{R}\right)\frac{FS}{A_d}
+\]
+\\
+
+\paragraph{Relación de Rechazo de Modo Común - $RRMC \neq \infty$:}
+
+La $RRMC$ es un parámetro del circuito que describe qué tanto se atenúa la señal que entra en modo común en el amplificador operacional. Debido a que el terminal no inversor está directamente a masa, esta configuración no posee error debido a este factor.
+
+\\
+\[
+\Delta v_{o_{(RRMC \neq \infty)}} = 0
+\]
+\\
+
+\subsubsection{Errores AC}
+\subsubsection{Ancho de Banda a Plena Potencia $\omega_{HP}$:}
+
+Este parámetro tiene que ver con el límite de velocidad de crecimiento de la señal de salida, es la máxima frecuencia de una senoidal que puede reproducirse sin distorsión para excursiones elevadas. En este caso se tomará para $10 [V_{pp}]$, tal que:
+\\
+\[
+\omega_{HP} = \frac{SR}{V_{pp}}
+\]
+\\
+
+Tal que el Slew Rate ($SR$) se define como la velocidad de variación máxima de la señal, y se expresa como:
+\\
+\[
+SR = \left[\frac{d(v_o)}{dt}\right]_{max}
+\]
+\\
+
+\paragraph{Ancho de Banda de Pequeña Señal $\omega_H$:}
+
+Partimos de estas expresiones para realizar despeje necesario:
+\\
+\[
+T(s) = -k.A_d(s)
+\]
+\\
+\[
+k = -\frac{T(s)}{A_d(s)} = \frac{R}{R + 2.R_f}
+\]
+\\
+\[
+\omega_H = k.GBW = \frac{R}{R + 2.R_f} GBW
+\]
+\\
+
+\subsubsection{Error Vectorial Normalizado $\epsilon_\omega$:}
+
+Los errores a tratar tienen que ver con el módulo y la fase de la señal de salida. La comparación entre la salida ideal y la salida real del sistema para cierta frecuencia, en términos relativos se le conoce como \verb|"Error dinámico"|:
+\\
+\[
+\epsilon_\omega = \frac{v_{oi}-v_{o\omega}}{v_{oi}} = \frac{A_{vfi}-A_{vf}(\omega)}{A_{vfi}} = 1-\frac{A_{vf}(\omega)}{A_{vfi}} = 1-\frac{\frac{A_{vfi}}{1+\frac{j\omega}{\omega_H}}}{A_{vfi}} = \frac{1+\frac{j\omega}{\omega_H}-1}{1+\frac{j\omega}{\omega_H}} = \frac{\frac{j\omega}{\omega_H}}{1+\frac{j\omega}{\omega_H}}
+\] 
+\\
+
+El módulo de la diferencia expresada por el error dinámico se define como \verb|"Error vectorial"|:
+\\
+\[
+\epsilon_v = |\epsilon_\omega| = \left|\frac{\frac{j\omega}{\omega_H}}{1+\frac{j\omega}{\omega_H}}\right| = \frac{\frac{\omega}{\omega_H}}{\sqrt{1+\frac{\omega^2}{\omega_H^2}}}
+\] 
+\\
+
+El error introducido en la fase se da según el argumento de $A_{vf}$, ya que esta es la relación entre la entrada y la salida, es decir, lo que puede producir el desfasaje:
+\\
+\[
+v_o = A_{vf}.(v_1 + v_2)
+\]
+\\
+
+En los cálculos de $A_{vfi}$ es posible ver que tiene signo negativo, por lo que si tomamos la segunda forma de Black para $A_{vf}$, esto resulta en:
+\\
+\[
+A_{vf} = \frac{A_{vfi}}{1+\frac{s}{\omega_H}}
+\]
+\\
+\[
+\Phi_v = \angle A{vfi} - \angle \left(1+\frac{s}{\omega_H}\right)
+\]
+\\
+\[
+\Phi_v = \pi - arctg\left(\frac{\omega}{\omega_H}\right)
+\]
+\\
+
+\subsection{Condición 1.A: $R_i=50 [\Omega]$}
+
+\subsubsection{Requerimiento de $Z_i$:}
+
+Esta primer condición define la resistencia interna de las fuentes de señal es $R_i=50 [\Omega]$, tal que para cumplir el requerimiento de $Z_i$ se tiene que:
+\\
+\[
+Z_i = R = (10)R_i = 500 [\Omega]
+\]
+\\
+
+Por lo tanto si $R=500[\Omega]$, no se cargará la etapa anterior.
+
+De aquí en adelante, las fórmulas donde se note el valor de $R$ serán completadas con $550 [\Omega]$, tal que se considere la resistencia interna en dichas ecuaciones.\\
+
+\subsubsection{Requerimiento de ganancia:}
+
+Ahora, teniendo en cuenta las resistencias internas de cada fuente, la ganancia para cada fuente de señal depende de $R_f$, que se calcula como:
+\\
+\[
+|A_{vfi}| = \left|-\frac{R_f}{R}\right| = 30
+\]
+\\
+\[
+R_f = 30.(R) = 30(550) = 16,5 [k\Omega]
+\]
+\\
+
+\subsubsection{Errores DC:}
+
+Los datos con los que se completarán las ecuaciones obtenidas anteriormente, son extraídos desde el datasheet del $LM324$, para el caso extremo donde se tienen en cuenta las peores condiciones, y para el caso típico:
+\\
+\[
+\Delta v_{o_{V_{os(max)}}} = \left(1+\frac{2.R_f}{R}\right)V_{os(max)} = \left(1+\frac{33 [k\Omega]}{550 [\Omega]}\right)9 [mV] = 549 [mV]
+\]
+\\
+\[
+\Delta v_{o_{V_{os(typ)}}} = \left(1+\frac{2.R_f}{R}\right)V_{os(typ)} = \left(1+\frac{33 [k\Omega]}{550 [\Omega]}\right)2 [mV] = 122 [mV]
+\]
+\\
+\[
+\Delta v_{o_{I_{pol(max)}}} = R_f.I_{pol(max)^-} = 16,5 [k\Omega] (500 [nA]) = 8,25 [mV] 
+\]
+\\
+\[
+\Delta v_{o_{I_{pol(typ)}}} = R_f.I_{pol(typ)^-} = 16,5 [k\Omega] (40 [nA]) = 660 [\mu V] 
+\]
+\\
+\[
+\Delta v_{o_{(A_d<\infty)}} = \left(1+\frac{2.R_f}{R}\right)\frac{FS}{A_d} = (61)\frac{10 [V]}{100\left[\frac{V}{mV}\right]} = 6,1 [mV]
+\]
+\\
+\[
+\Delta v_{o_{(RRMC \neq \infty)}} = 0
+\]
+\\
+
+Por lo tanto, la suma de todos los errores en DC da como resultado:
+\\
+\[
+\Delta v_{o_{DC}} = v_{o_{(A_d<\infty)}} + v_{o_{I_{pol}}} + v_{o_{(V_{os})}} = 0.122 + 0.00066 + 0.0061 = 0.12876 [V]
+\]
+\\
+
+\subsubsection{Errores AC:}
+
+\[
+\omega_{HP} = \frac{SR}{V_{pp}} = \frac{0,3\left[\frac{V}{\mu V}\right]}{10 [V]} = 30000 \left[\frac{rad}{s}\right]
+\]
+\\
+\[
+\omega_H = \frac{R}{R + 2.R_f} GBW = \frac{550 [\Omega]}{550 [\Omega] + 32 [k\Omega]} 1[MHz] 2\pi = 106167.5 \left[\frac{rad}{s}\right]
+\]
+\\
+
+Se utilizaron las siguientes fórmulas para completar la Tabla de Error Vectorial Normalizado:
+\\
+\[
+|a_{vf}| = \left|\frac{A_{vf}}{A_{vfi}}\right| = \left|\frac{1}{1+\frac{j\omega}{\omega_H}}\right| = \frac{1}{\sqrt{1+\frac{\omega^2}{\omega_H^2}}}
+\]
+\\
+\[
+\angle a_{vf} = -arctg\left(\frac{\omega}{\omega_H}\right)
+\]
+\\
+\[
+\epsilon_v = \frac{\frac{\omega}{\omega_H}}{\sqrt{1+\frac{\omega^2}{\omega_H^2}}}
+\]
+\\
+\[
+\angle \epsilon_v = \angle \left(\frac{\frac{j\omega}{\omega_H}}{1+\frac{j\omega}{\omega_H}}\right) = \angle \left(\frac{j\omega}{\omega_H}\right) - \angle \left(1 +\frac{j\omega}{\omega_H}\right) = \frac{\pi}{2} - arctg\left(\frac{\omega}{\omega_H}\right)
+\]
+\\
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+ & \multicolumn{2}{c|}{\textbf{Ganancia Normalizada}} & \multicolumn{2}{c|}{\textbf{Error Vectorial}} \\
+\cline{2-5} 
+ & \textbf{Módulo [veces]} & \textbf{Fase [°]} & \textbf{Módulo [veces]} & \textbf{Fase [°]} \\
+\hline
+$0.1 f_H$ & 0,995 & -5,711 & 0,0995 & 84,289 \\
+\hline
+$0.2 f_H$ & 0,981 & -11,31  & 0,1962 & 78,69 \\
+\hline
+$0.3 f_H$ & 0,958 & -16,699 & 0,2874 & 73,3 \\
+\hline
+$0.4 f_H$ & 0,928 & -21,801 & 0,3712 & 68,199 \\
+\hline
+$0.5 f_H$ & 0,894 & -26,565 & 0,447 & 63,435 \\
+\hline
+$0.6 f_H$ & 0,857 & -30,964 & 0,5142 & 59,036 \\
+\hline
+$0.7 f_H$ & 0,819 & -34,992 & 0,5733 & 55 \\
+\hline
+$0.8 f_H$ & 0,781 & -38,66 & 0,6248 & 51,34 \\
+\hline
+$0.9 f_H$ & 0,743 & -41,987 & 0,6687 & 48,013 \\
+\hline
+$1 f_H$ & 0,707 & -45 & 0,707 & 45 \\
+\hline
+\end{tabular}
+\caption{Ganancia Normalizada y Error Vectorial vs. Frecuencia}
+\end{table}
+
+\subsubsection{Simulación:}
+
+Para la condición $1.A$, se utilizó el programa LTspice para realizar simulaciones de salidas ante distintas configuraciones de entradas que se detallarán a continuación. En la siguiente figura podemos ver el diagrama circuital del mismo:
+\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Circuito1.png} 
+    \caption{Diagrama del Sumador Inversor en LTspice para condición 1.A.} 
+\end{figure}
+
+\paragraph{$v_{o}$ en función de $v_1$:}
+Se realizó un barrido de tensión continua para $v_1$, de $-10 [V]$ a $10 [V]$, a continuación se muestran los resultados de la salida:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Barrido_v1.png} 
+    \caption{$v_o$ (verde) para un barrido de $v_1$ (rojo).} 
+\end{figure}
+
+Puede observarse una ganancia de 30 veces, verificando los cálculos hechos para las resistencias del circuito.
+\\
+
+\paragraph{Errores DC - $V_{os}$:}
+
+Se utilizó un amplificador operacional ideal, con el parámetro de tensión de offset en $9 [mV]$, y se analizó la salida, tal que:\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Circuito_Vos_1.png} 
+    \caption{Circuito con parámetros ajustados a $V_{os}$.} 
+\end{figure}
+
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Vos_1.png} 
+    \caption{Resultados del análisis de $V_{os(max)}$.} 
+\end{figure}
+
+Posteriormente se realizó el mismo análisis con un valor de $2 [mV]$, obteniendo la siguiente salida:\\
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Vos_12.png} 
+    \caption{Resultados del análisis de $V_{os(typ)}$.} 
+\end{figure}
+
+Es posible observar que los valores coinciden exactamente con lo calculado.\\
+
+
+\paragraph{Errores DC - $I_{pol}$:}
+
+Se dispuso una fuente de corriente saliente del terminal inversor del amplificador operacional a masa, como es muestra en la figura a contrinuación, tal que la tensión a la salida fue:\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Circuito_Ios_1.png} 
+    \caption{Circuito con parámetros ajustados a $I_{pol(max)}$.} 
+\end{figure}
+
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Ios_1.png} 
+    \caption{Resultados del análisis de $I_{pol(max)}$.} 
+\end{figure}
+
+Luego se realizó el mismo análisis con un valor de $40 [nA]$, obteniendo la siguiente salida:\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Ios_12.png} 
+    \caption{Resultados del análisis de $I_{pol(typ)}$.} 
+\end{figure}
+
+De esta manera puede observarse que los valores simulados son iguales a lo obtenido en las ecuaciones.\\
+
+
+\paragraph{Errores DC - $A_d finito$:}
+
+Se ajustaron los parámetros del amplificador ideal tal que se tenga $A_d = 100 [\frac{V}{mV}]$, de tal manera que la salida que pueda leerse sea comparada con la salida ideal que se espera (la cual sería $30 [veces]$ la señal de entrada). En la figura siguiente se observa el circuito y el resultado de la simulación ante una entrada de $200 [mV]$:\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Circuito_Ad_1.png} 
+    \caption{Circuito con parámetros ajustados a $A_d$ finito.} 
+\end{figure}
+
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Ad_1.png} 
+    \caption{Resultados del análisis de $A_d$ finito.} 
+\end{figure}
+
+De esta manera puede escribirse:
+\\
+\[
+\Delta v_{o_{(A_d<\infty)}} = v_{oi} - v_{o} = (0.2).30 - 5.9963 = 3,7 [mV]
+\]
+\\
+
+Por lo tanto, la suma de todos los errores en DC da como resultado:
+\\
+\[
+\Delta v_{o_{DC}} = v_{o_{(A_d<\infty)}} + v_{o_{I_{pol}}} + v_{o_{(V_{os})}} = 0.122 + 0.00066 + 0.0037 = 0.12636 [V]
+\]
+\\
+
+\paragraph{Errores AC - Slew Rate:}
+
+Para medir este parámetro, se mantuvo $v_2 = 0$ y en $v_1$ se inyectó una señal cuadrada de $300 [mV]$ de amplitud y una frecuencia de $20 [kHz]$, de esta manera se obtuvo la siguiente salida:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{SR_1.png} 
+    \caption{Análisis temporal para medir el Slew Rate.} 
+\end{figure}
+
+A partir de esta, es posible calcular el Slew Rate de la siguiente forma:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{SR_1_Analisis.png} 
+    \caption{Cursores sobre el análisis temporal para medir el Slew Rate.} 
+\end{figure}
+
+\[
+SR = \frac{\Delta v_o}{\Delta t} = \frac{10.813469 [V]}{22.02981 [\mu s]} = 0,490856 \left[\frac{V}{\mu s}\right]
+\]
+\\
+
+
+\paragraph{Errores AC - Ancho de Banda de Pequeña Señal:}
+
+Se graficó un Diagrama de Bode tal que se pueda medir el ancho de banda del circuito, se muestra a continuación:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{BW_1.png} 
+    \caption{Diagrama de Bode.} 
+\end{figure}
+
+En base al gráfico puede observarse que el ancho de banda del circuito para esta condición es:
+\\
+\[
+BW = 16,5 [kHz]
+\]
+\\
+
+\paragraph{Ensayo del circuito:}
+
+En esta simulación se comprobó la función del circuito como sumador inversor, tal que se inyectaron dos señales que difieren en amplitud, tal que se analice la salida y se verifique que sea la suma de dichas señales amplificadas, se presenta a continuación el resultado de la simulación:
+\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Sumador_1.png}
+    \caption{Ensayo para Sumador Inversor.} 
+\end{figure}
+
+Como logra verse en la imagen, ambas señales son de $1 [kHz]$ de frecuencia, y las amplitudes son $v_1 = 75[mV]$ y $v_2 = 125 [mV]$. La suma de ambas nos da $0,2 [V]$, y multiplicado por la ganancia calculada que son $-30 [veces]$, se obtiene la señal de salida que se observa en la figura anterior.
+\\
+
+\subsubsection{Mediciones:}
+El circuito para la condición 1.A fue armado en el laboratorio para realizar pruebas y mediciones de su desempeño real, a continuación se muestra una imagen del mismo,en el cual es posible ver la configuración de resistencias que ayuda:
+\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Sumador_Armado_1.png}
+    \caption{Sumador Inversor armado para la condición 1.A.} 
+\end{figure}
+
+\paragraph{$v_{o}$ en función de $v_1$:}
+Se realizó un barrido de tensión continua para $v_1$, de $-1 [V]$ a $1 [V]$, a continuación se muestran los resultados de la salida:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Barrido_armado_v1.png} 
+    \caption{$v_o$ ante barrido de tensión continua en $v_1$.} 
+\end{figure}
+
+Puede observarse una ganancia no tan lineal como las simulaciones, pero lo suficiente para determinar que se encuentra cerca de 30 [veces].
+\\
+
+\paragraph{Errores DC:}
+Se realizaron las pruebas necesarias para definir los errores en continua, éstas constaron de analizar el circuito tal y como fue definido por la consigna, tomar las mediciones, y luego corregir el desbalance de impedancias para cada terminal de entrada del amplificador, tal que éste se traduce en un modo diferencial de tensión.
+
+La corrección del desbalance se lleva a cabo colocando una resistencia en el terminal positivo, la cual sea el paralelo entre la resistencia de realimentación y la de entrada de señal, tal que los resultados se presentan a continuación:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Vos_armado_21.png} 
+    \caption{$v_o$ sin corrección de error en DC.} 
+\end{figure}
+
+Mientras que si colocamos la resistencia de corrección:
+
+\\
+\[
+R_c = 16500//(550//550) \approx 220 [\Omega]
+\]
+\\
+
+Entonces el resultado de la medición es el que se muestra a continuación:
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Vos_armado_22.png} 
+    \caption{$v_o$ corregido para el error en DC.} 
+\end{figure}
+
+Por lo tanto el error de DC que puede determinarse es de la diferencia en la tensión de salida ante la misma entrada en cada caso, para el cual se obtiene:
+
+\\
+\[
+Error_{DC} = (3 - 1.4) [mV] = 1.6 [mV]
+\]
+\\
+
+
+\paragraph{Diagrama de Bode:}
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Bode_armado_1.png} 
+    \caption{Diagrama de Bode para la condición 1.} 
+\end{figure}
+
+Se logra ver el límite del ancho de banda del amplificador en:
+\\
+\[
+BW = 10 [kHz]
+\]
+\\
+
+\paragraph{Medición de Slew Rate:}
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{SR_armado_1.png} 
+    \caption{Medición de Slew Rate para la condición 1.} 
+\end{figure}
+
+Se logra calcular el valor de slew rate como:
+\\
+\[
+SR = \frac{v_2-v_1}{t_2-t_1}
+\]
+\\
+\[
+SR = \frac{(8,4+9,2) [V]}{(15,2+33,6)[\mu s]} = 0,36\left[\frac{V}{\mu s}\right]
+\]
+\\
+
+
+
+\subsection{Condición 1.B: $R_i=100 [k\Omega]$}
+
+\subsubsection{Requerimiento de $Z_i$:}
+
+La segunda condición planteada por la consigna define la resistencia interna de las fuentes de señal como $R_i=100 [k\Omega]$, tal que para cumplir el requerimiento de $Z_i$ se debe cumplir:
+\\
+\[
+Z_i = R = (10)R_i = 1 [M\Omega]
+\]
+\\
+
+Por lo tanto si $R=1[M\Omega]$, no se cargará la etapa anterior.
+
+De aquí en adelante, las fórmulas donde se note el valor de $R$ serán completadas con $1,1 [M\Omega]$, tal que se considere la resistencia interna en dichas ecuaciones.\\
+
+\subsubsection{Requerimiento de ganancia:}
+
+Ahora, teniendo en cuenta las resistencias internas de cada fuente, la ganancia para cada fuente de señal depende de $R_f$ que se calcula como:
+\\
+\[
+|A_{vfi}| = \left|-\frac{R_f}{R}\right| = 30
+\]
+\\
+\[
+R_f = 30.(R) = 30(1,1 M) = 33 [M\Omega]
+\]
+\\
+
+Sin embargo no es posible utilizar este valor en una resistencia debido a los requerimientos, por lo que se propone utilizar una red T como impedancia de realimentación.\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Circuito_2T.png}
+    \caption{Diagrama del Sumador Inversor en LTspice para condición 1.B.} 
+\end{figure}
+
+Para volver a calcular los parámetros necesarios, el análisis comienza planteando la caída de tensión en $R_2$, dado que $v^- = 0$ considerándolo ideal. El nodo entre las 3 resistencias de la red T se denominará $v'$, y la corriente que pasa la red T es la misma que la que pasa por la resistencia $R_2$, tal que será:
+\\
+\[
+i_f = \frac{v'}{R_2} = \left(v_{o}\frac{R_2//R_5}{R_2//R_5 + R_4}\right)\frac{1}{R_2}
+\]
+\\
+
+De esta manera, tomando la relación entre la tensión de salida y la corriente calculada, podemos obtener $R_f$ en función de las resisitencias de la red T:
+\\
+\[
+R_f = \frac{v_o}{i_f} = \frac{v_o}{\left(v_{o}\frac{R_2//R_5}{R_2//R_5 + R_4}\right)\frac{1}{R_2}} = \frac{(R_2)(R_2//R_5 + R_4)}{R_2//R_5} = \frac{(\frac{R_2.R_5}{R_2 + R_5} + R_4)}{\frac{R_5}{R_2 + R_5}}
+\]
+\\
+\[
+R_f = \frac{R_2.R_4+ R_4.R_2 + R_4.R_5}{R_5} = \frac{R_2.R_4}{R_5} + R_2 + R_4
+\]
+\\
+
+Para elegir los valores de resistencias se plantea $R_2 = R_4 = 100 [k\Omega]$, de tal manera que quede como única incógnita $R_5$, para lo cual ésta resulta:
+\\
+\[
+R_5 = \frac{R_2.R_4}{R_f - R_2 - R_4} = \frac{(100k)^2}{33M - 100k - 100k} = 304,87 [\Omega] \eqsim 300 [\Omega]
+\]
+\\
+
+Aproximando al valor comercial de $300 [\Omega]$, la ganancia del circuito resulta:
+\\
+\[
+\frac{R_f}{R} = \frac{\frac{R_2.R_4}{R_5} + R_2 + R_4}{R} = \frac{\frac{(100k)^2}{300} + 100k + 100k}{1,1M} = \frac{33,53 M}{1,1 M} = 30,48 [veces]
+\]
+\\
+
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}[american]
+
+\draw (7,2) node[op amp] (opamp1) {};
+% Entrada no inversora U1
+\draw (opamp1.+) to (5.5,1.5) node[ground] {};
+
+% Entrada inversora U1
+\draw (opamp1.-) -- (4.5,2.5) to[R, l=$R$, -o] (1.5,2.5) node[left]{$v_1$};
+\draw (4.5,2.5) -- (4.5,1) to [R, l=$R$, -o] (1.5,1) node[left]{$v_2$}{};
+\draw (4.5,2.5) -- (4.5,5) to [R, l=$R_2$] (7,5) to [R, l=$R_4$, -o] (9.5,5) node[right]{$v_{oT}$}{};
+\draw (7.1,5) to [R, l=$R_5$] (7.1,3.5) node[ground]{};
+
+% Salida U1
+\draw (8,2) to[short,-o] (9.5,2) node[right]{$v_o$};
+    \end{circuitikz}
+    \caption{Sumador inversor con lazo de realimentación abierto}
+\end{figure}
+
+Se hizo necesario volver a resolver la ecuación para la ganancia del lazo T:
+\[
+T = \left[\frac{v_o}{v_{oT}}\right]_{v_1=v_2=0} =\frac{(v^-_T)(-A_d)}{v_{oT}}
+\]
+\\
+\[
+v' = v_{oT}\frac{R_5//(R_2 + \frac{R}{2})}{R_5//(R_2 + \frac{R}{2}) + R_4}
+\]
+\\
+\[
+v_T^- = v'\frac{\frac{R}{2}}{\frac{R}{2} + R_2} = \left(v_{oT}\frac{R_5//(R_2 + \frac{R}{2})}{R_5//(R_2 + \frac{R}{2}) + R_4}\right)\left(\frac{\frac{R}{2}}{\frac{R}{2} + R_2}\right)
+\]
+\\
+\[
+T = \frac{\left(v_{oT}\frac{R_5//(R_2 + \frac{R}{2})}{R_5//(R_2 + \frac{R}{2}) + R_4}\right)\left(\frac{\frac{R}{2}}{\frac{R}{2} + R_2}\right)(-A_d)}{v_{oT}} = \left(\frac{R_5//(R_2 + \frac{R}{2})}{R_5//(R_2 + \frac{R}{2}) + R_4}\right)\left(\frac{\frac{R}{2}}{\frac{R}{2} + R_2}\right)(-A_d)
+\]
+\\
+\[
+T = \left(\frac{\frac{R_5.(R_2 + \frac{R}{2})}{R_5 + R_2 + \frac{R}{2}}}{\frac{R_5.(R_2 + \frac{R}{2})}{R_5 + R_2 + \frac{R}{2}} + R_4}\right)\left(\frac{\frac{R}{2}}{\frac{R}{2} + R_2}\right)(-A_d) = \left(\frac{R_5(\frac{R}{2})(-A_d)}{R_5.(R_2 + \frac{R}{2}) + R_4.R_5 + R_4.(R_2 + \frac{R}{2})}\right)
+\]
+\\
+\[
+T = \left(\frac{R_5.R(-A_d)}{2.R_5.R_2 + R_5.R + 2.R_4.R_5 + 2.R_4.R_2 + R_4.R}\right) = -2,5297 {.} 10^{-3} A_d
+\]
+\\
+
+
+\subsubsection{Errores DC:}
+
+Los datos con los que se completarán las ecuaciones obtenidas anteriormente, son extraídos desde el datasheet del $LM324$, para el caso extremo donde se tienen en cuenta las peores condiciones, y para el caso típico:
+\\
+\[
+\Delta v_{o_{V_{os(max)}}} = \frac{\left[\frac{v_o}{V_{os(max)}}\right]_{LA}}{1-T}.V_{os(max)} = \frac{A_d.V_{os(max)}}{1-(-2,5297 {.} 10^{-3} A_d)} = 395,3 {.} 9 [mV] = 3,58 [V]
+\]
+\\
+\[
+\Delta v_{o_{V_{os(typ)}}} = 395,3 {.} 2 [mV] = 0,7906 [V]
+\]
+\\
+\[
+\Delta v_{o_{I_{pol}}} = \frac{\left[\frac{v_o}{I_{pol^-}}\right]_{LA}.I_{pol^-}}{1-T} = \frac{\frac{R}{2}//(R_2 + R_4//R_5)A_d.I_{pol^-}}{1-T} = \frac{\frac{\frac{R}{2}(R_2 + \frac{R_4.R_5}{R_4 + R_5})}{\frac{R}{2} + R_2 + \frac{R_4.R_5}{R_4 + R_5}}A_d.I_{pol^-}}{1-(-2,5297 {.} 10^{-3} A_d)}
+\]
+\\
+\[
+\Delta v_{o_{I_{pol(max)}}} = (33,53 {.} 10^{6}){.} 500 [nA] = 16,76 [V]
+\]
+\\
+\[
+\Delta v_{o_{I_{pol(typ)}}} = (33,53 {.} 10^{6}) {.}40 [nA] = 1,341 [V]
+\]
+\\
+\[
+\Delta v_{o_{(A_d<\infty)}} = \frac{\left[\frac{v_o}{v_{d_{max}}}\right]_{LA}}{1-T}.v_{d_{max}} = \frac{A_d}{1-(-2,5297 {.} 10^{-3} A_d)}\frac{FS}{A_d} = 395,3 {.} \frac{10}{100000} = 39,53 [mV]
+\]
+\\
+\[
+\Delta v_{o_{(RRMC \neq \infty)}} = 0
+\]
+\\
+
+Por lo tanto, la suma de todos los errores en DC da como resultado:
+\\
+\[
+\Delta v_{o_{DC}} = v_{o_{(A_d<\infty)}} + v_{o_{I_{pol}}} + v_{o_{(V_{os})}} = 0.7906 + 1,341 + 0.03953 = 2.17113 [V]
+\]
+\\
+
+
+\subsubsection{Errores AC:}
+
+\[
+\omega_{HP} = \frac{SR}{V_{pp}} = \frac{0,3\left[\frac{V}{\mu V}\right]}{10 [V]} = 30000 \left[\frac{rad}{s}\right]
+\]
+\\
+\[
+\omega_H = -\frac{T}{A_d} GBW = 2,5297{.}10^{-3} 1[MHz] 2\pi = 15894,57 \left[\frac{rad}{s}\right]
+\]
+\\
+
+Sobre la Tabla de Error Vectorial Normalizado, al tratarse de porcentajes de frecuencias respecto al ancho de banda, estas se cumplirán de la misma forma que para la condición 1.A, así como también se cumple que las ecuaciones son iguales. Debido a esto, la tabla para esta condición es idéntica a la anterior.
+\\
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+ & \multicolumn{2}{c|}{\textbf{Ganancia Normalizada}} & \multicolumn{2}{c|}{\textbf{Error Vectorial}} \\
+\cline{2-5} 
+ & \textbf{Módulo [veces]} & \textbf{Fase [°]} & \textbf{Módulo [veces]} & \textbf{Fase [°]} \\
+\hline
+$0.1 f_H$ & 0,995 & -5,711 & 0,0995 & 84,289 \\
+\hline
+$0.2 f_H$ & 0,981 & -11,31  & 0,1962 & 78,69 \\
+\hline
+$0.3 f_H$ & 0,958 & -16,699 & 0,2874 & 73,3 \\
+\hline
+$0.4 f_H$ & 0,928 & -21,801 & 0,3712 & 68,199 \\
+\hline
+$0.5 f_H$ & 0,894 & -26,565 & 0,447 & 63,435 \\
+\hline
+$0.6 f_H$ & 0,857 & -30,964 & 0,5142 & 59,036 \\
+\hline
+$0.7 f_H$ & 0,819 & -34,992 & 0,5733 & 55 \\
+\hline
+$0.8 f_H$ & 0,781 & -38,66 & 0,6248 & 51,34 \\
+\hline
+$0.9 f_H$ & 0,743 & -41,987 & 0,6687 & 48,013 \\
+\hline
+$1 f_H$ & 0,707 & -45 & 0,707 & 45 \\
+\hline
+\end{tabular}
+\caption{Ganancia Normalizada y Error Vectorial vs. Frecuencia}
+\end{table}
+
+
+\subsubsection{Simulación:}
+
+Se utilizó el LTspice para realizar simulaciones de salidas ante configuraciones de entradas que se detallarán a continuación para la condición 1.B. En la siguiente figura podemos ver el diagrama circuital del mismo:
+\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Circuito2.png} 
+    \caption{Diagrama del Sumador Inversor en LTspice} 
+\end{figure}
+
+\paragraph{$v_{o}$ en función de $v_1$:}
+Se realizó un barrido de tensión continua para $v_1$, de $-10 [V]$ a $10 [V]$ (con $v_2 = 0$), a continuación se muestran los resultados de la salida:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Barrido_v1_2.png} 
+    \caption{$v_o$ (verde) para un barrido de $v_1$ (azul).} 
+\end{figure}
+
+Se verificó que la ganancia para excursiones que no saturan, alcanza las 30,5 [veces], acorde a las resistencias comerciales colocada en la red T a modo de  $R_f$.
+\\
+
+\paragraph{Errores DC - $V_{os}$:}
+
+Se utilizó un amplificador operacional ideal, con el parámetro de tensión de offset en $9 [mV]$, y se analizó la salida, tal que:\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Circuito_Vos_2.png} 
+    \caption{Circuito con parámetros ajustados a $V_{os}$.} 
+\end{figure}
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Vos_2.png} 
+    \caption{Resultados del análisis de $V_{os(max)}$.} 
+\end{figure}
+
+Luego se realizó la simulación para una tensión de offset de $2 [mV]$:
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Vos_21.png} 
+    \caption{Resultados del análisis de $V_{os(typ)}$.} 
+\end{figure}
+
+Los valores obtenidos son muy similares a los calculados matemáticamente.\\
+
+\paragraph{Errores DC - $I_{pol}$:}
+
+Se dispuso una fuente de corriente saliente del terminal inversor del amplificador operacional a masa, como es muestra en la figura a contrinuación, tal que la tensión a la salida fue:\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Circuito_Ios_2.png} 
+    \caption{Circuito con parámetros ajustados a $I_{pol}$.} 
+\end{figure}
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Ios_2_1.png} 
+    \caption{Resultados del análisis de $I_{pol(max)}$.} 
+\end{figure}
+
+Si se coloca la fuente en un valor más típico, como para el que fue calculado el error ($40 [nA]$), se obtiene:\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Ios_2_2.png} 
+    \caption{Resultados del análisis de $I_{pol}$.} 
+\end{figure}
+
+Nuevamente los valores coinciden con lo obtenido analíticamente.\\
+
+\paragraph{Errores DC - $A_d finito$:}
+
+Se ajustaron los parámetros del amplificador ideal tal que se tenga $A_d = 100 [\frac{V}{mV}]$, de tal manera que la salida que pueda leerse sea comparada con la salida ideal que se espera (la cual sería $30.5 [veces]$ la señal de entrada). En la figura siguiente se observa el circuito y el resultado de la simulación ante una entrada de $200 [mV]$:\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Circuito_Ad_2.png} 
+    \caption{Circuito con parámetros ajustados a $A_d$ finito.} 
+\end{figure}
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Ad_2.png} 
+    \caption{Resultados del análisis de $A_d$ finito.} 
+\end{figure}
+
+De esta manera puede escribirse:
+\\
+\[
+\Delta v_{o_{(A_d<\infty)}} = v_{oi} - v_{o} = (0.2){.}30,5 - 6.07289 = 27,11 [mV]
+\]
+\\
+
+Por lo tanto, la suma de todos los errores en DC da como resultado:
+\\
+\[
+\Delta v_{o_{DC}} = v_{o_{(A_d<\infty)}} + v_{o_{I_{pol}}} + v_{o_{(V_{os})}} = 0.79 + 1.3408 + 0.02711 = 2.15711 [V]
+\]
+\\
+
+\paragraph{Errores AC - Slew Rate:}
+
+Para medir este parámetro, se mantuvo $v_2 = 0$ y en $v_1$ se inyectó una señal cuadrada de $2 [V]$ de amplitud y una frecuencia de $20 [kHz]$, de esta manera se obtuvo la siguiente salida:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{SR_2.png} 
+    \caption{Análisis temporal para medir el Slew Rate.} 
+\end{figure}
+
+A partir de esta, es posible calcular el Slew Rate de la siguiente forma:\\
+
+\[
+SR = \frac{\Delta v_o}{\Delta t} = \frac{10.011222 [V]}{20.45677 [\mu s]} = 0,489384 \left[\frac{V}{\mu s}\right]
+\]
+\\
+
+
+\paragraph{Errores AC - Ancho de Banda de Pequeña Señal:}
+
+Se graficó un Diagrama de Bode para medir el ancho de banda del circuito:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{BW_2.png} 
+    \caption{Diagrama de Bode.} 
+\end{figure}
+
+En base al gráfico puede observarse que el ancho de banda del circuito para esta condición es:
+\\
+\[
+BW = 2,48 [kHz]
+\]
+\\
+
+\paragraph{Ensayo del circuito:}
+
+En esta simulación se comprobó la función del circuito como sumador inversor, tal que se inyectaron dos señales que difieren en amplitud, tal que se analice la salida y se verifique que sea la suma de dichas señales amplificadas, se presenta a continuación el resultado de la simulación:
+\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Sumador_1.png}
+    \caption{Diagrama de Bode.} 
+\end{figure}
+Ambas señales son de $500 [Hz]$ de frecuencia, y las amplitudes son $v_1 = 175[mV]$ y $v_2 = 125 [mV]$. La suma de ambas nos da $0,3 [V]$, y multiplicado por la ganancia calculada que son $-30,5 [veces]$, se obtiene la señal de salida que se observa en la figura anterior.
+\\
+
+\subsubsection{Mediciones:}
+El circuito para la condición 1.B fue armado en el laboratorio para realizar pruebas y mediciones de su desempeño real, a continuación se muestra una imagen del mismo:
+\\
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Sumador_Armado_2.png}
+    \caption{Sumador Inversor armado para la condición 1.B.} 
+\end{figure}
+
+\paragraph{$v_{o}$ en función de $v_1$:}
+Se realizó un barrido de tensión continua para $v_1$, de $-1 [V]$ a $1 [V]$, a continuación se muestran los resultados de la salida:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Barrido_armado_v2.png} 
+    \caption{$v_o$ ante barrido de tensión continua en $v_1$.} 
+\end{figure}
+
+Puede observarse una ganancia no tan lineal como las simulaciones, pero lo suficiente para determinar que se encuentra cerca de 30 [veces].
+\\
+
+\paragraph{Errores DC:}
+Se realizaron las pruebas necesarias para definir los errores en continua, éstas constaron de analizar el circuito tal y como fue definido por la consigna, tomar las mediciones, y luego corregir el desbalance de impedancias para cada terminal de entrada del amplificador, tal que éste se traduce en un modo diferencial de tensión.
+
+La corrección del desbalance se lleva a cabo colocando una resistencia en el terminal positivo, la cual sea el paralelo entre la resistencia de realimentación y la de entrada de señal, tal que los resultados se presentan a continuación:\\
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Vos_armado_11.png} 
+    \caption{$v_o$ sin corrección de error en DC.} 
+\end{figure}
+
+Mientras que si colocamos la resistencia de corrección:
+\\
+\[
+R_c = 33[M\Omega]//(1,1[M\Omega]//1,1[M\Omega]) \approx 500 [k\Omega]
+\]
+\\
+
+Entonces el resultado de la medición es el que se muestra a continuación:
+
+\\
+\[
+Error_{DC} = (38.4 - 13) [mV] = 25.4 [mV]
+\]
+\\
+
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Vos_armado_12.png} 
+    \caption{$v_o$ corregido para el error en DC.} 
+\end{figure}
+
+Por lo tanto el error de DC que puede determinarse es de la diferencia en la tensión de salida ante la misma entrada en cada caso, para el cual se obtiene:
+
+
+\paragraph{Diagrama de Bode:}
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Bode_armado_1.png} 
+    \caption{Diagrama de Bode para la condición 1.} 
+\end{figure}
+
+Se logra ver el límite del ancho de banda del amplificador en:
+\\
+\[
+BW = 10 [kHz]
+\]
+\\
+
+\paragraph{Medición de Slew Rate:}
+
+   \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{SR_armado_2.png} 
+    \caption{Medición de Slew Rate para la condición 1.} 
+\end{figure}
+
+Se logra calcular el valor de slew rate como:
+\\
+\[
+SR = \frac{v_2-v_1}{t_2-t_1}
+\]
+\\
+\[
+SR = \frac{(11,6) [V]}{(100)[\mu s]} = 0,116\left[\frac{V}{\mu s}\right]
+\]
+\\
+
+
+
+
+
+\end{document}
