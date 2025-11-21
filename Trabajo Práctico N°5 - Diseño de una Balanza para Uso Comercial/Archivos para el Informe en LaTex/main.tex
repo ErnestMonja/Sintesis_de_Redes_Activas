@@ -1,0 +1,489 @@
+\documentclass[12pt,a4paper]{article}
+
+% Paquetes básicos
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{setspace}
+\usepackage{multirow}
+
+\onehalfspacing
+
+% Para circuitos
+\usepackage{circuitikz}
+
+% Datos
+\author{Nombre y Apellido \\ Legajo: XXXXX}
+\date{\today}
+
+\begin{document}
+
+% Carátula personalizada
+\begin{titlepage}
+    \centering
+    \includegraphics[width=0.25\textwidth]{escudo.png} 
+    \hspace{1cm}
+    \includegraphics[width=0.3\textwidth]{download.png} \\[1cm]
+
+    {\large \textbf{UNIVERSIDAD NACIONAL DE CÓRDOBA} \\[0.5cm]}
+    {\large \textbf {FACULTAD DE CIENCIAS EXACTAS, FÍSICAS Y NATURALES} \\[1cm]}
+    {\Large SÍNTESIS DE REDES ACTIVAS \\[1cm]}
+
+    \rule{\textwidth}{0.5pt} \\[0.5cm]
+    {\Large \textbf{Trabajo Práctico N°5} \\[0.3cm]}
+    {\Large \textbf{Diseño de una Balanza para Uso Comercial} \\[0.3cm]}
+    \rule{\textwidth}{0.5pt} \\[1cm]
+
+\begin{tabular}{l l}
+\textbf{Profesor Titular:} & Dr. Ing. Ferreyra Pablo \\
+\textbf{Profesor Adjunto:} & Ing. Reale Cesar \\
+\\
+\textbf{Alumnos:} & Dávila Tomassi, Carlos Valentino \\
+ & Mendes Rosa, Agustín \\
+ & Monja, Ernesto Joaquín \\
+\end{tabular}\\[3cm]
+
+{\centering Año 2025 \par}
+
+\end{titlepage}
+
+% Índice
+\tableofcontents
+\newpage
+\indent
+
+
+
+\section{\underline{Introducción}}
+\subsection{\underline{Objetivo}}
+En este presente informe, se busca detallar el proceso de selección, diseño y verificación de la etapa analógica de una balanza comercial, buscando aplicar los conocimientos tanto teóricos como prácticos adquiridos a lo largo de la asignatura, con respecto a los amplificadores operacionales. Además, se busca poder realizar un análisis del mercado para estimar precios y buscar realizar una alternativa competitiva.
+\\
+
+
+
+\subsection{\underline{Requerimientos}}
+A modo de requerimientos para esta balanza, se busca que esta cumpla con los siguientes requisitos:
+
+\begin{itemize}
+    \item Resolución: 1 [g].
+    \item Temperatura de funcionamiento: 0 [°C] a 40 [°C].
+    \item Rango máximo: 2 [kg].
+\end{itemize}
+
+
+
+\section{\underline{Desarrollo}}
+\subsection{\underline{Marco Teórico}}
+\subsubsection{\underline{Celda de Carga}}
+Una celda de carga es un transductor que convierte una fuerza mecánica (peso, tracción, compresión, flexión, etc.) en una señal eléctrica. Su funcionamiento se basa, casi siempre, en el uso de galgas extenso métricas (strain gauges del Inglés). Se conectan estas galgas en forma de puente de Wheatstone como se muestra en la siguiente imagen:
+\\
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{Figura 1.jpg}
+    \caption{Puente de Wheatstone.} 
+    \end{figure}
+
+De esta imagen, se deduce que la tensión de salida es igual a: 
+
+\begin{equation}
+    \label{eq_1}
+    v_{o} = v_{in}\left(\frac{R_1(R_3)-R_2(R_4)}{(R_1+R_2)(R_3+R_4)}\right)
+\end{equation}
+
+Nótese que en (\ref{eq_1}), se deduce que una variación en alguna de las resistencias generara un cambio de tensión a la salida del puente. Se tiene que las celdas están compuestas de un cuerpo metálico (generalmente aluminio, acero u otro material), el cual se deforma mínimamente cuando se aplica una fuerza. Sobre ese cuerpo deformable se pegan galgas extenso métricas, que son pequeñas resistencias que cambian su valor cuando se estiran o comprimen. Se deduce entonces que de aplicar un peso sobre la celda, se deformará la galga y consecuentemente variará la resistencia de la misma lo que afectará a la tensión de salida del puente de Wheatstone tal como se muestra en la siguiente imagen:
+\\
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Figura 2.png}
+    \caption{Galga extenso métrica.} 
+    \end{figure}
+
+Esta variación de la resistencia eléctrica del material con respecto a la deformación es lineal siempre y cuando se trabaje en la zona lineal del material, es decir en la zona donde la deformación sea elástica tal que la galga pueda ser capaz de volver a su forma original (es decir a su valor de resistencia original).
+
+
+
+\subsubsection{\underline{Acondicionamiento Analógico de la Señal}}
+Se tiene que la salida del Puente de Wheatstone es una salida diferencial proporcional a la deformación producida por el peso tal que para poder procesar esta señal de forma digital mediante un ADC, primero deberemos acondicionarla de forma analógica. Para ello resulta evidente que es necesario amplificar la señal para que el ADC pueda convertirla correctamente a una versión digitalizada de la misma y por lo tanto pueda ser mostrada al operario de la balanza.
+
+Se tiene entonces que se puede implementar tal diseño mediante un amplificador de instrumentación compuesto por 3 amplificadores operacionales individuales tal como se observa en la siguiente figura:
+\\
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Figura 3.png}
+    \caption{Amplificador de Instrumentación.} 
+    \end{figure}
+
+La principal ventaja de los amplificadores de instrumentación es que solventan no tan solo el desbalance de impedancias de entrada que ocurren en el amplificador diferencial dado por $AO_3$ mediante la inclusión de los amplificadores $AO_1$ y $AO_2$, sino que también la baja impedancia de entrada del diferencial que consecuentemente causara una pobre RRMC, la cual dada nuestra aplicación es sumamente necesario que esta sea alta.
+
+Para calcular la expresión que de la tensión de salida, partimos de que su consideramos al circuito como ideal, se tiene que las tensiones de entrada $E_b$ y $E_a$ serán las mismas tensiones que se verán a bornes de la resistencia $R_3$ de modo tal que:
+
+\begin{equation}
+    \label{eq_2}
+    E_{a} - E_{b} = i_{3}(R_{3})
+\end{equation}
+
+Donde se define a $i_{3}$ como la corriente que va desde el terminal inferior de $R_{3}$ hasta el terminal superior de $R_{3}$. Por otro lado, viendo la salida de $U_1$ y de $U_2$ (es decir los puntos $V_{a}$ y $V_{b}$) se tiene que dado que las corrientes de polarización se asumen nulas dado que los $AO$ son ideales, entonces se debe cumplir que: 
+
+\begin{equation}
+    \label{eq_3}
+    V_{b}-V_{a}=i_{3}(R_{1}+R_{3}+R_{4})
+\end{equation}
+
+Despejando $i_{3}$ de (\ref{eq_2}) y reemplazando en (\ref{eq_3}), se tiene que:
+
+\begin{equation}
+    \label{eq_4}
+    V_{b}-V_{a} = \left(\frac{E_{a}-E_{b}}{R_3}\right)(R_{1}+R_{3}+R_{4})
+\end{equation}
+
+\begin{equation}
+    \label{eq_5}
+    V_{b}-V_{a} = \left(1 + \frac{2R_{1}}{R_3}\right)(E_{a}-E_{b})
+\end{equation}
+
+Luego, como $AO_3$ es un amplificador diferencial, entonces se debe cumplir que:
+
+\begin{equation}
+    \label{eq_6}
+    V_{o} = \left(\frac{R_{6}}{R_2}\right)(V_{b}-V_{a})
+\end{equation}
+
+Finalmente, reemplazando (\ref{eq_5}) en (\ref{eq_6}), se tiene que:
+
+\begin{equation}
+    \label{eq_7}
+    V_{o} = \left(1 + \frac{2R_{1}}{R_3}\right)\left(\frac{R_{6}}{R_2}\right)(E_{a}-E_{b})
+\end{equation}
+
+Se deduce entonces que la ganancia depende de múltiples valores de resistencias los cuales serán ajustados en secciones posteriores al marco teórico para minimizar errores, maximizar ganancia y abaratar costos.
+
+
+
+\subsection{\underline{Análisis de Mercado}}
+Si bien resulta posible realizar un análisis teórico-práctico sobre como diseñar una balanza comercial utilizando solo herramientas de diseño de circuitos, en este informe también se abordará un análisis de mercado para entender cual será el presupuesto con el que se cuenta para poder elegir los componentes ya mencionados en el marco teórico.
+
+Para ello, se encontró que una balanza comercial que tenga las mismas especificaciones técnicas descritas en la sección 1.2 es la que se presenta a continuación:
+\\
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Figura 4.png}
+    \caption{Balanza Digital KW201 de Mercado Libre.} 
+    \end{figure}
+    
+De este precio, se deduce que descontando el Impuesto al Valor Agregado (conocido también como el IVA) del 21 [\%] que actualmente existe en la Republica Argentina, se tiene que el precio neto sin IVA es igual a:
+
+\begin{equation}
+    \label{eq_8}
+    P_{Neto\ sin\ IVA} = \frac{65000 \ [\$]}{1,21} = 53719 \ [\$]
+\end{equation}
+
+Luego, restaremos los impuestos provinciales como lo es la alícuota del 4,75 [\%] para la Provincia de Córdoba y la Contribución/tributo municipal para la Ciudad de Córdoba (Córdoba Capital) del 0,7 [\%] para las actividades que no tengan alícuota específica, se deduce que el precio neto por unidad de Balanza Comercial sin impuestos es de:
+
+\begin{equation}
+    \label{eq_9}
+    Costo_{Unitario} = \frac{53719 \ [\$]}{1,06} = 51181 \ [\$]
+\end{equation}
+
+Una vez deducido el costo unitario que puede tener la balanza, se procederá a elegir en base a (\ref{eq_9}), los componentes a utilizar en el próximo aparatado.
+
+
+
+\subsection{\underline{Selección de Componentes}}
+En este apartado, se buscará dividir el presupuesto obtenido según (\ref{eq_9}) en los distintos componentes que conforman la placa y para ello se propone seguir la siguiente tabla:
+\\
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Figura 5.png}
+    \caption{Tabla de Costos por 1000 unidades} 
+    \end{figure}
+
+Esta tabla se armo en base a los precios unitarios en DigiKey de cada componente si se comprarán en un lote de 1000 unidades. Cabe destacar que comparando el precio total obtenido de esta tabla, mas el costo unitario máximo obtenido según \ref{eq_9}, nos da un buen margen tanto de ganancia como de ajustarnos al mercado para reducir el precio de nuestro producto y consecuentemente volvernos más competitivos o poder usar este margen para poder afrontar los costes de envío que conlleva traer estos materiales a la Argentina.
+\\
+
+
+
+\subsection{\underline{Diseño de la ganancia del circuito}}
+Se propone que el amplificador de instrumentación tenga una ganancia de tensión de 50 veces y para ello resulta necesario fijar algunos valores de resistencias tales como se presenta a continuación:
+\begin{itemize}
+    \item $R_{1} = 4500 \ [\Omega]$
+    \item $R_{2} = 1000 \ [\Omega]$
+    \item $R_{3} = 1000 \ [\Omega]$
+    \item $R_{4} = 4500 \ [\Omega]$
+    \item $R_{5} = 1000 \ [\Omega]$
+    \item $R_{6} = 5000 \ [\Omega]$
+    \item $R_{7} = 5000 \ [\Omega]$
+\end{itemize}
+De esta forma, se verifica que:
+\begin{equation}
+    \label{eq_10}
+    A_{vfi} = \left(1 + \frac{2(4500))}{1000}\right)\left(\frac{5000}{1000}\right) = 10(5)=50 \ [veces]
+\end{equation}
+
+
+
+\subsection{\underline{Cálculo de Errores en Continua}}
+En este apartado, se presentará una metodología de calculo para obtener los errores en continua de este amplificador y justificar la elección del microcontrolador dada la resolución en bits de su ADC. Para ello es fundamental primeramente determinar según la hoja de datos del LM342N los siguientes valores:
+\begin{itemize}
+    \item $I_{os} = 5 \ [nA]$
+    \item $I_{pol}^+=I_{pol}^-= 45 \ [nA]$ 
+    \item $V_{os} = \pm \ 2 \ [mV]$
+    \item $RRMC = 70 \ [dB]$
+    \item $A_{d}(0) = 100 \ [dB]$
+    \item $FE = 5 \ [V]$
+\end{itemize}
+
+
+
+\subsubsection{\underline{Errores del Amplificador Diferencial}}
+Sea el amplificador diferencial como el que se muestra en la siguiente figura:
+\\
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Figura 6.png}
+    \caption{Amplificador Diferencial} 
+    \end{figure}
+
+En general, su ganancia estará según la Fórmula de Black tal que:
+
+\begin{equation}
+    \label{eq_11}
+    A_{vfi} = \frac{A_{vi}}{1-T}
+\end{equation}
+
+Donde se deduce que:
+
+\begin{equation}
+    \label{eq_12}
+    A_{vi} = \left(\frac{v_{o}}{v_{1}-v_{2}}\right)_{v_{oT}=0} = \frac{\alpha R A_{d}(0)}{\alpha R+ R} = \frac{\alpha A_{d}(0)}{\alpha+1}
+\end{equation}
+
+\begin{equation}
+    \label{eq_13}
+    T = \left(\frac{v_{o}}{v_{oT}}\right)_{v_{1}=v_{2}=0} = \frac{-R A_{d}(0)}{\alpha R+ R} = \frac{-A_{d}(0)}{\alpha+1}
+\end{equation}
+
+Tal que finalmente, resulta que la ganancia de lazo cerrado de forma ideal es igual:
+
+\begin{equation}
+    \label{eq_14}
+    A_{vfi} = \frac{\frac{\alpha A_{d}(0)}{\alpha+1}}{1 + \frac{A_{d}(0)}{\alpha+1}} \approx \frac{\frac{\alpha A_{d}(0)}{\alpha+1}}{\frac{A_{d}(0)}{\alpha+1}} = \alpha
+\end{equation}
+
+Donde $\alpha = \frac{R_{6}}{R_{2}}=5$ dado lo definido en la sección anterior.
+
+\begin{itemize}
+    \item \underline{Error por Corriente de Polarización:}
+    \begin{equation}
+        \label{eq_15}
+        \Delta v_{o} = \frac{\frac{v_o}{I_{pol}^+}}{1-T}(I_{pol}^+) + \frac{\frac{v_o}{I_{pol}^-}}{1-T}(I_{pol}^-)
+    \end{equation}
+    Donde se deduce que: $\frac{v_o}{I_{pol}^+}=-A_{d}(0)(R//\alpha R)$ y $\frac{v_o}{I_{pol}^-}=A_{d}(0)(R//\alpha R)$ de forma al que reemplazando en (\ref{eq_15}):
+    \begin{equation}
+        \label{eq_16}
+        \Delta v_{o} = \frac{A_{d}(0)(R//\alpha R)}{1-\frac{-A_{d}(0)}{\alpha+1}}(I_{pol}^- - I_{pol}^+) = \frac{A_{d}(0)(R)\frac{\alpha}{\alpha+1}}{1+\frac{A_{d}(0)}{\alpha+1}} (I_{os})
+    \end{equation}
+    \begin{equation}
+        \label{eq_17}
+        \Delta v_{o} \approx \alpha(R)(I_{os})=5(1000 \ [\Omega])(5 \ [nA]) = 25 \ [\mu V]
+    \end{equation}
+    
+    \item \underline{Error por Tensión de Offset}:
+    \begin{equation}
+        \label{eq_18}
+        \Delta v_{o} = \frac{\frac{v_o}{V_{os}}}{1-T}(V_{os})
+    \end{equation}
+    Donde se deduce que: $\frac{v_o}{V_{os}}=A_{d}(0)$ de forma al que reemplazando en (\ref{eq_18}):
+    \begin{equation}
+        \label{eq_19}
+        \Delta v_{o} = \frac{A_{d}(0)}{1-\frac{-A_{d}(0)}{\alpha+1}}(V_{os}) \approx \frac{A_{d}(0)}{\frac{A_{d}(0)}{\alpha+1}}(V_{os})=(\alpha+1)(V_{os})=6(2 \ [mV]) = 12 \ [mV]
+    \end{equation}
+
+    \item \underline{Error por Ganancia de Lazo Abierto Finita:}
+    \begin{equation}
+        \label{eq_20}
+        \Delta v_{o} = \frac{\frac{v_o}{v_{d}}}{1-T}(v_{d})
+    \end{equation}
+    Donde se deduce que: $\frac{v_o}{v_{d}}=A_{d}(0)$ y que $v_{d \ max}=\frac{FE}{A_{d}(0)}$ de forma al que reemplazando en (\ref{eq_20}):
+    \begin{equation}
+        \label{eq_21}
+        \Delta v_{o} = \frac{A_{d}(0)}{1-\frac{-A_{d}(0)}{\alpha+1}} \frac{FE}{A_{d}(0)} \approx \frac{FE}{\frac{A_{d}(0)}{\alpha+1}}=\frac{(\alpha+1)(FE)}{A_{d}(0)}= \frac{(6)(5 \ [V])}{10^5} = 0,3 \ [mV]
+    \end{equation}
+
+    \item \underline{Error por RRMC no Infinita:}
+    \begin{equation}
+        \label{eq_22}
+        \Delta v_{o} = \frac{\frac{v_o}{v_{d}}}{1-T}(v_{d})
+    \end{equation}
+    Donde se deduce que: $\frac{v_o}{v_{d}}=A_{d}(0)$ y que $v_{d \ max}=\frac{v_{c \ max}}{RRMC}$ de forma al que reemplazando en (\ref{eq_22}):
+    \begin{equation}
+        \label{eq_23}
+        \Delta v_{o} = \frac{A_{d}(0)}{1-\frac{-A_{d}(0)}{\alpha+1}} \frac{v_{c \ max}}{RRMC} \approx \frac{A_{d}(0)}{\frac{A_{d}(0)}{\alpha+1}}\frac{v_{c \ max}}{RRMC} = \frac{\alpha+1}{RRMC}v_{c \ max}
+    \end{equation}
+    Donde se tiene que: $v_{c \ max}=\frac{FE}{\alpha}\frac{\alpha}{\alpha+1}=\frac{FE}{\alpha+1}$ por lo que reemplazando en (\ref{eq_23}) se tiene que:
+    \begin{equation}
+        \label{eq_24}
+        \Delta v_{o} = \frac{FE}{RRMC} = \frac{5 \ [V]}{10^4} = 0,5 \ [mV]
+    \end{equation}
+    
+    \item \underline{Error total:} Finalmente, se deduce que el error total del amplificador diferencial es igual a la suma de todos los errores calculados, tal que:
+    \begin{equation}
+        \label{eq_25}
+        \Delta v_{o \ tot} = 25 \ [\mu V] + 12 \ [mV] + 0,3 \ [mV]+ 0,5 \ [mV] = 12,825 \ [mV]
+    \end{equation}
+\end{itemize}
+
+
+
+\subsubsection{\underline{Errores del $AO_1$ y $AO_2$}}
+Nótese que como estos dos amplificadores son simétricos, su calculo de errores es exactamente el mismo por lo tanto se opta por realizarlo dentro de una sola sección en el informe. Analizando la configuración vista tanto en $AO_1$ como en $AO_2$, se observa en ambos una configuración no inversora de ganancia tal como se muestra en la figura:
+\\
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Figura 7.png}
+    \caption{Configuración no inversora} 
+    \label{Figura7}
+    \end{figure}
+
+Primero se tiene que la $R_{1}$ de la Figura 7, es la resistencia equivalente a $R_{3}$ de la Figura 3, tal que ahora para simplificar los cálculos se llamará $R= 1000 \ [\Omega]$. Por otra parte, la resistencia $R_{2}$ de la Figura 7, es la resistencia equivalente a $R_{1}=R_{4}=4500 \ [\Omega]$ de la Figura 3, tal que ahora para simplificar los cálculos se llamará $\beta R$ donde $\beta=\frac{4500 \ [\Omega]}{1000 \ [\Omega]} = 4,5$. No se confunda estos valores de resistencias con los utilizados en el calculo de los errores de la etapa diferencial de salida.
+Se tiene entonces que su ganancia según la Fórmula de Black estará dada por: \ref{eq_13} donde se deduce que:
+
+\begin{equation}
+    \label{eq_26}
+    A_{vi} = \left(\frac{v_{o}}{v_{in}}\right)_{v_{oT}=0} = A_{d}(0)
+\end{equation}
+
+\begin{equation}
+    \label{eq_27}
+    T = \left(\frac{v_{o}}{v_{oT}}\right)_{v_{in}=0} = \frac{-R }{\beta R+ R}A_{d}(0) = \frac{-A_{d}(0)}{\beta+1}
+\end{equation}
+
+Tal que finalmente, resulta que la ganancia de lazo cerrado de forma ideal es igual:
+
+\begin{equation}
+    \label{eq_28}
+    A_{vfi} = \frac{ A_{d}(0)}{1 + \frac{A_{d}(0)}{\beta+1}} \approx \frac{ A_{d}(0)}{\frac{A_{d}(0)}{\beta+1}}=(\beta+1)
+\end{equation}
+
+Donde $\beta = \frac{R_{4,1}}{R_{3}}=4,5$ dado lo definido en el principio de esta sección.
+
+\begin{itemize}
+    \item \underline{Error por Corriente de Polarización:}
+    \begin{equation}
+        \label{eq_29}
+        \Delta v_{o} = \frac{\frac{v_o}{I_{pol}^+}}{1-T}(I_{pol}^+) + \frac{\frac{v_o}{I_{pol}^-}}{1-T}(I_{pol}^-)
+    \end{equation}
+    Donde se deduce que: $\frac{v_o}{I_{pol}^+}=0$ y $\frac{v_o}{I_{pol}^-}=A_{d}(0)(R//\beta R)$ de forma al que reemplazando en (\ref{eq_31}):
+    \begin{equation}
+        \label{eq_30}
+        \Delta v_{o} = \frac{A_{d}(0)(R//\beta R)}{1-\frac{-A_{d}(0)}{\beta+1}}(I_{pol}^-) \approx \frac{A_{d}(0)(R)\frac{\beta}{\beta+1}}{\frac{A_{d}(0)}{\beta+1}} (I_{pol}^-)
+    \end{equation}
+    \begin{equation}
+        \label{eq_31}
+        =\beta(R)(I_{os})=4,5(1000 \ [\Omega])(45 \ [nA]) = 0,202 \ [\mu V]
+    \end{equation}
+    
+    \item \underline{Error por Tensión de Offset}:
+    \begin{equation}
+        \label{eq_32}
+        \Delta v_{o} = \frac{\frac{v_o}{V_{os}}}{1-T}(V_{os})
+    \end{equation}
+    Donde se deduce que: $\frac{v_o}{V_{os}}=A_{d}(0)$ de forma al que reemplazando en (\ref{eq_32}):
+    \begin{equation}
+        \label{eq_33}
+        \Delta v_{o} = \frac{A_{d}(0)}{1-\frac{-A_{d}(0)}{\beta+1}}(V_{os}) \approx \frac{A_{d}(0)}{\frac{A_{d}(0)}{\beta+1}}(V_{os})=(\beta+1)(V_{os})=4,5(2 \ [mV]) = 9 \ [mV]
+    \end{equation}
+
+    \item \underline{Error por Ganancia de Lazo Abierto Finita:}
+    \begin{equation}
+        \label{eq_34}
+        \Delta v_{o} = \frac{\frac{v_o}{v_{d}}}{1-T}(v_{d})
+    \end{equation}
+    Donde se deduce que: $\frac{v_o}{v_{d}}=A_{d}(0)$ y que $v_{d \ max}=\frac{FE}{A_{d}(0)}$ de forma al que reemplazando en (\ref{eq_34}):
+    \begin{equation}
+        \label{eq_35}
+        \Delta v_{o} = \frac{A_{d}(0)}{1-\frac{-A_{d}(0)}{\beta+1}} \frac{FE}{A_{d}(0)} \approx \frac{FE}{\frac{A_{d}(0)}{\beta+1}}=\frac{(\beta+1)(FE)}{A_{d}(0)}= \frac{(5,5)(5 \ [V])}{10^5} = 0,275 \ [mV]
+    \end{equation}
+
+    \item \underline{Error por RRMC no Infinita:}
+    \begin{equation}
+        \label{eq_36}
+        \Delta v_{o} = \frac{\frac{v_o}{v_{d}}}{1-T}(v_{d})
+    \end{equation}
+    Donde se deduce que: $\frac{v_o}{v_{d}}=A_{d}(0)$ y que $v_{d \ max}=\frac{v_{c \ max}}{RRMC}$ de forma al que reemplazando en (\ref{eq_36}):
+    \begin{equation}
+        \label{eq_37}
+        \Delta v_{o} = \frac{A_{d}(0)}{1-\frac{-A_{d}(0)}{\beta+1}} \frac{v_{c \ max}}{RRMC} \approx \frac{A_{d}(0)}{\frac{A_{d}(0)}{\beta+1}}\frac{v_{c \ max}}{RRMC} = \frac{\beta+1}{RRMC}v_{c \ max}
+    \end{equation}
+    Donde se tiene que: $v_{c \ max}=\frac{FE}{\beta}\frac{\beta}{\beta+1}=\frac{FE}{\beta+1}$ por lo que reemplazando en (\ref{eq_37}) se tiene que:
+    \begin{equation}
+        \label{eq_38}
+        \Delta v_{o} = \frac{FE}{RRMC} = \frac{5 \ [V]}{10^4} = 0,5 \ [mV]
+    \end{equation}
+    
+    \item \underline{Error total:} Finalmente, se deduce que el error total de los amplificadores $AO_{1}$ y $AO_{2}$ es igual a la suma de todos los errores calculados, tal que:
+    \begin{equation}
+        \label{eq_39}
+        \Delta v_{o \ tot} = 0,202 \ [\mu V] + 9 \ [mV] + 0,275 \ [mV]+ 0,5 \ [mV] = 9,775 \ [mV]
+    \end{equation}
+\end{itemize}
+
+
+
+\subsubsection{\underline{Error Total del Circuito y Numero de Bits del Conversor}}
+Finalmente se concluye que la suma de todos los errores de los 3 operacionales analizados converge en el error total del amplificador de instrumentación, de modo que:
+
+\begin{equation}
+    \label{eq_40}
+    \Delta v_{o \ Amp \ Inst} =  12,825 \ [mV] + 9,775 \ [mV] + 9,775 \ [mV] = 32,375 \ [mV]
+\end{equation}
+
+De aquí, podemos verificar la elección del microcontrolador ya que la resolución de su ADC, depende exclusivamente del análisis de error efectuado recientemente, tal que la resolución mínima de bits que debe tener tal conversor es de:
+
+\begin{equation}
+    \label{eq_41}
+    n = log_{2}(\frac{FE}{\Delta v_{o \ Amp \ Inst}}) = log_{2}(\frac{5 \ [V]}{32,375 \ [mV]}) = 7,22 \ [bits]
+\end{equation}
+
+Finalmente, se puede optar por elegir un PIC16F887 ya utilizado en asignaturas como Electrónica Digital II ya que si bien su resolución es de 10 bits, podemos utilizar no toda la resolución del ADC del PIC para no muestrear errores analógicos y además aprovechar el mayor poder de computo que tiene este procesador para realizar otras tareas como mostrar el peso en el display, o utilizar los pulsadores seleccionados entre otras funcionalidades que ya sobrepasan los fines de este trabajo práctico. Esta opción resulta ser la mas lógica dada la dificultad de encontrar microcontroladores con resolución menor a 10 bits, además de que utilizar un ADC externo a la placa y de menor resolución, implicaría aumentar aún los costos del producto reduciendo su competitividad en el mercado.
+
+
+
+\section{\underline{Conclusión}}
+A lo largo de este informe se ha desarrollado el proceso de diseño de una balanza comercial tanto en un aspecto teórico utilizando las ecuaciones y métodos de análisis desarrollados a lo largo de la asignatura, tanto así también en un aspecto comercial, buscando ofrecer una alternativa competitiva ante el mercado buscando la mejor combinación entre calidad y precio de los componentes dado un análisis circuital y analítico de un amplificador de instrumentación.
+\\
+
+
+
+\section{\underline{Bibliografía}}
+\begin{itemize}
+    \item \href{https://www.straingauges.cl/blog-details}{Figura 1: Puente de Wheatstone}.
+    \item \href{https://www.flintec.com/es/aprender/sensor-de-peso/celulas-de-carga}{Figura 2: Galga extensométrica.}
+    \item \href{https://fcefyn.aulavirtual.unc.edu.ar/pluginfile.php/951691/mod_resource/content/1/Gu%C3%ADa%20de%20Problemas%20Sintesis%20Redes%20Activas%202025.pdf}{Figura 3: Amplificador de Instrumentación (Problema 1.15).}
+    \item \href{https://www.mercadolibre.com.ar/balanza-digital-de-cocina-tanita-kw201-impermeable-nuevo/up/MLAU2869583515#polycard_client=search-nordic&search_layout=stack&position=45&type=product&tracking_id=5a856d4c-e98f-4b43-b193-1b280af08bbe&wid=MLA1968676040&sid=search}{Figura 4: Balanza Digital KW201 de Mercado Libre.}
+    \item \href{https://www.digikey.com/es/products/detail/bud-industries/CU-1941/439228}{Figura 5: Carcasa Plástica}
+    \item \href{https://www.mercadolibre.com.ar/chapa-acero-inoxidable-aisi-304/up/MLAU201997383?matt_tool=38087446&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id:MLA899064590}{Figura 5: Bandeja de Acero Inoxidable}
+    \item \href{https://www.digikey.com/es/products/detail/keystone-electronics/9900/317321}{Figura 5 - Tornillos}
+    \item \href{https://www.digikey.com/es/products/detail/te-connectivity-amp-connectors/21124-8/13985149}{Figura 5: Arandelas}
+    \item \href{https://www.digikey.com/es/products/detail/adafruit-industries-llc/4541/12323573}{Figura 5: Celda de Carga}
+    \item \href{https://www.digikey.com/es/products/detail/texas-instruments/LM324N/277627}{Figura 5: Amplificador Operacional}
+    \item \href{https://www.digikey.com/es/products/detail/microchip-technology/PIC16F887-I-P/1015608}{Figura 5: PIC16F887}
+    \item \href{https://www.digikey.com/es/products/detail/stackpole-electronics-inc/RNF14DBD1K00/17511389}{Figura 5: Resistencia de $1 \ [k \Omega]$}
+    \item \href{https://www.digikey.com/es/products/detail/stackpole-electronics-inc/RNF14DBC4K53/17508300}{Figura 5: Resistencia de $4,5 \ [k \Omega]$}
+    \item \href{https://www.digikey.com/es/products/detail/stackpole-electronics-inc/RNF14DBC4K99/17509105}{Figura 5: Resistencia de $5 \ [k \Omega]$}
+    \item \href{https://www.digikey.com/es/products/detail/liteon/LSHD-5503/560009}{Figura 5: Display 7 Segmentos}
+    \item \href{https://www.digikey.com/es/products/detail/c-k/Y41A00521FPLFS/1466352}{Figura 5: Pulsadores}
+    \item \href{https://www.digikey.com/es/products/detail/energizer-battery-company/A1604-BK210J/11615674}{Figura 5: Batería de $9 \ [V]$}
+    \item \href{https://www.alldatasheet.com/datasheet-pdf/view/17880/PHILIPS/LM324N.html}{Datasheet del LM324N}
+    \item \href{https://fcefyn.aulavirtual.unc.edu.ar/pluginfile.php/951691/mod_resource/content/1/Gu%C3%ADa%20de%20Problemas%20Sintesis%20Redes%20Activas%202025.pdf}{Figura 6: Amplificador Diferencial (Problema 2.1).}
+    \item \href{https://fcefyn.aulavirtual.unc.edu.ar/pluginfile.php/951691/mod_resource/content/1/Gu%C3%ADa%20de%20Problemas%20Sintesis%20Redes%20Activas%202025.pdf}{Figura 6: Amplificador Diferencial (Problema 1.2).}
+\end{itemize}
+
+\end{document}
