@@ -85,7 +85,7 @@ En (\ref{eq_1}), se tiene que el polinomio denominador $D(s)$ será como máximo
     a_{vf}(s) = \frac{A_{vf}(s)}{A_{vf}(0)} = \frac{1 + \frac{s}{\omega_z Q_z} + \frac{s^2}{\omega_z^2}}{1 + \frac{s}{\omega_p Q_p} + \frac{s^2}{\omega_p^2}}
 \end{equation}
 
-La expresión de (\ref{eq_2}) es conocida como la bicuadrática generalizada, puede ser además normalizada en frecuencia respecto a la frecuencia del polo $(\omega_p)$ quedando en:
+La expresión de (\ref{eq_2}) es conocida como la bicuadrática generalizada que además, puede ser normalizada en frecuencia respecto a la frecuencia del polo $(\omega_p)$ quedando en:
 
 \begin{equation}
     \label{eq_3}
@@ -131,12 +131,12 @@ La ecuación (\ref{eq_5}) será la ecuación de partida para relacionar los coef
         \label{eq_10}
         Q_p = \frac{1}{\sqrt{2}}
     \end{equation}
-     y por lo tanto, reemplazando lo obtenido en (\ref{eq_10}) con la expresión encontrada de (\ref{eq_8}) se tiene que:
+     y por lo tanto, reemplazando lo obtenido en (\ref{eq_10}) con la expresión encontrada de (\ref{eq_8}) y ademas tomando raiz cuadrada en ambos lados de la ecuación, se tiene que:
      \begin{equation}
          \label{eq_11}
-         |a_{vf}(j\Omega)|^2 = \frac{1}{\sqrt{1 + \Omega^4}}
+         |a_{vf}(j\Omega)| = \frac{1}{\sqrt{1 + \Omega^4}}
      \end{equation}
-    Tal que si buscamos la frecuencia de corte de $-3 \ [dB]$, se tiene que:
+    Tal que si buscamos la frecuencia de corte de $-3 \ [dB]$, se debe cumplir que (\ref{eq_11}) debe ser igual a:
     \begin{equation}
         \label{eq_12}
         \frac{1}{\sqrt{1 + \Omega_H^4}} = \frac{1}{\sqrt{2}}
@@ -162,12 +162,12 @@ La ecuación (\ref{eq_5}) será la ecuación de partida para relacionar los coef
         \label{eq_16}
         \Omega_G^4 + \frac{1}{Q_p^2} \Omega_G^2 = 1
     \end{equation}
-    Si definimos que: $x=\Omega_G$ y aplicando lo deducido en (\ref{eq_10}), el sistema se simplifica a un ecuación cuadrática igual a:
+    Si definimos que: $x=\Omega_G$ y aplicando lo deducido en (\ref{eq_10}), el sistema se simplifica a una ecuación cuadrática igual a:
     \begin{equation}
         \label{eq_17}
         x^2 + 2x - 1 = 0
     \end{equation}
-    Donde la solución no negativa es $x_1=0,4142$ y por lo tanto: $\Omega_G=\sqrt{x}=\sqrt{0,4142}=0,644$ y por lo tanto: $\omega_G = \Omega_G \ \omega_p = 0,644\omega_p$. Finalmente el Margen de Fase para esta condición será igual a:
+    Donde la solución no negativa es $x_1=0,4142$ y por lo tanto: $\Omega_G=\sqrt{x}=\sqrt{0,4142}=0,644$ y por lo tanto: $\omega_G = \Omega_G \ \omega_p = 0,644 \ \omega_p$. Finalmente el Margen de Fase para esta condición será igual a:
     \begin{equation}
         \label{eq_18}
         M\phi = \ang{180} + \arg(T(j\Omega_G))
@@ -193,12 +193,12 @@ La ecuación (\ref{eq_5}) será la ecuación de partida para relacionar los coef
         \label{eq_22}
         \tau(j\Omega) = \frac{\partial \arg(a_{vf}(j\Omega))}{\partial \Omega} = \frac{n_1(1+n_2\Omega^2)}{(1+n_2\Omega^2)^2+(n_1\Omega)^2} - \frac{d_1(1+d_2\Omega^2)}{(1+d_2\Omega^2)^2+(d_1\Omega)^2} 
     \end{equation}
-    La expresión (\ref{eq_22}) muestra que el retardo es también un función par respecto a la frecuencia normalizada y en consecuencia, la condición de retardo máximamente plano exige que los coeficientes de las potencias homologas sean iguales, esto es que para: $\tau(j\Omega)|=cte.$ se debe cumplir que: $n'_i = d'_i \ \forall \ \Omega \ / \ 0 \leqslant \omega \leqslant \infty \ \And \ \forall \ i\in \mathbb{N}$ donde: $\tau(j\Omega)=\frac{N'(j\Omega)}{D'(j\Omega)}$.
+    La expresión (\ref{eq_22}) muestra que el retardo es también un función par respecto a la frecuencia normalizada y en consecuencia, la condición de retardo máximamente plano exige que los coeficientes de las potencias homologas sean iguales, esto es que para: $\tau(j\Omega)=cte.$ se debe cumplir que: $n'_i = d'_i \ \forall \ \Omega \ / \ 0 \leqslant \omega \leqslant \infty \ \And \ \forall \ i\in \mathbb{N}$ donde: $\tau(j\Omega)=\frac{N'(j\Omega)}{D'(j\Omega)}$.
 
     Por lo tanto, aplicando estas conclusiones al caso de interés (el polinomio numerador de grado 0) e identificando los coeficientes respectivos, resulta que:
     \begin{equation}
         \label{eq_23}
-        \tau(j\Omega) = - \frac{d_1(1 + d_2\Omega^2)}{(1 + d_2\Omega^2)^2 + (d_1\Omega)^2} = \frac{d_1(1 + d_2\Omega^2)}{1 + (d_1^2 - 2d_2)\Omega^2 + d_2^2\Omega^4}
+        \tau(j\Omega) = - \frac{d_1(1 + d_2\Omega^2)}{(1 + d_2\Omega^2)^2 + (d_1\Omega)^2} = -\frac{d_1(1 + d_2\Omega^2)}{1 + (d_1^2 - 2d_2)\Omega^2 + d_2^2\Omega^4}
     \end{equation}
     En la expresión (\ref{eq_23}), la condición de retardo máximamente plano encontrada $(n'_i=d'_i)$ es unicamente aplicable a los coeficientes del denominador de $2^{do}$ grado, es decir que solo afecta: $d_2 = d_1^2 - 2d_2$, donde: $d_1 = \frac{1}{Q_p^2}$ y: $d_2 = 1$ de modo tal que:
     \begin{equation}
@@ -234,12 +234,12 @@ La ecuación (\ref{eq_5}) será la ecuación de partida para relacionar los coef
         \label{eq_30}
         \Omega_G^4 + 3\Omega_G - 1 = 0
     \end{equation}
-    Si definimos a $z=\Omega_G^2$ se llega a:
+    Si definimos a $x=\Omega_G^2$ se llega a:
     \begin{equation}
         \label{eq_31}
-        z^2 + 3z - 1 = 0
+        x^2 + 3x - 1 = 0
     \end{equation}
-    Nuevamente, resolviendo esta ecuación cuadrática y tomando unicamente la solución positiva, se tiene que: $z_1=0,3027$ tal que: $\Omega_G = \sqrt{z_1} = \sqrt{0,3027} = 0,55$ y por lo tanto: $\omega_G = \Omega_G \omega_p = 0,55 \omega_p$. Finalmente, el margen de fase asociado a este caso es igual a:
+    Nuevamente, resolviendo esta ecuación cuadrática y tomando unicamente la solución positiva, se tiene que: $x_1=0,3027$ tal que: $\Omega_G = \sqrt{x_1} = \sqrt{0,3027} = 0,55$ y por lo tanto: $\omega_G = \Omega_G \ \omega_p = 0,55 \ \omega_p$. Finalmente, el margen de fase asociado a este caso es igual a:
     \begin{equation}
         \label{eq_32}
         M\phi = \ang{180} + \arg(T(j\Omega_G))
@@ -256,19 +256,18 @@ La ecuación (\ref{eq_5}) será la ecuación de partida para relacionar los coef
 \end{itemize}
 
 Se tiene los resultados obtenidos en este apartado se pueden resumir en la siguiente tabla:
-    \begin{table}[H]
-        \begin{center}
-        \begin{tabular}{| c | c | c | c | c |}
-            \hline
-            Caso analizado & $Q_p$ & $\Omega_H$ & $\Omega_G$ & $M\phi$ \\ \hline
-            Máxima Planitud de Módulo & $\frac{1}{\sqrt{2}}$ & $1 \ \omega_p$ & $0,644 \ \omega_p$ & \ang{65,5} \\ \hline
-            Retardo Máximamente Plano & $\frac{1}{\sqrt{3}}$ & $0,786 \ \omega_p $ & $0,55 \ \omega_p$ & \ang{72,4} \\ \hline
-        \end{tabular}
-        \caption{Resultados Obtenidos}
-        \label{tab:tb_1}
-        \end{center}
-    \end{table}
-    
+\begin{table}[H]
+    \begin{center}
+    \begin{tabular}{| c | c | c | c | c |}
+        \hline
+        Caso analizado & $Q_p$ & $\Omega_H$ & $\Omega_G$ & $M\phi$ \\ \hline
+        Máxima Planitud de Módulo & $\frac{1}{\sqrt{2}}$ & $1 \ \omega_p$ & $0,644 \ \omega_p$ & \ang{65,5} \\ \hline
+        Retardo Máximamente Plano & $\frac{1}{\sqrt{3}}$ & $0,786 \ \omega_p $ & $0,55 \ \omega_p$ & \ang{72,4} \\ \hline
+    \end{tabular}
+    \caption{Resultados Obtenidos}
+    \label{tab:tb_1}
+    \end{center}
+\end{table}
 Como se observa, aquí se han analizado dos casos, donde en cada caso el factor de calidad ha cambiado de acuerdo al criterio deseado para el amplificador y consecuentemente han cambiado el resto de variables que determinan las características del amplificador. Sin embargo, dadas las ecuaciones obtenidas en este apartado, también es posible deducir como varían estas características del amplificador para cualquier factor de calidad el cual es la motivación principal de este informe y se desarrollara en los próximas secciones.
 
 
@@ -297,7 +296,7 @@ De aquí, se deduce que solo se busca la solución con frecuencia normalizada de
 Reemplazando a $x$ por $\Omega_H$, se deduce finalmente que:
 \begin{equation}
     \label{eq_39}
-    \Omega_H = \sqrt{\frac{2-\frac{1}{Q_p^2} + \sqrt{\left(\frac{1}{Q_p^2}-2\right)^2 -4 }}{2}}
+    \Omega_H = \sqrt{\frac{2-\frac{1}{Q_p^2} + \sqrt{\left(\frac{1}{Q_p^2}-2\right)^2 + 4}}{2}}
 \end{equation}
 A continuación, se presenta una gráfica realizada en Python que muestra la relación obtenida en (\ref{eq_39}) tal que:
 \begin{figure}[H]
@@ -532,6 +531,11 @@ plt.grid(True)
 plt.legend()
 plt.show()
 \end{minted}
+\end{itemize}
+    
+
+
+\end{document}
 \end{itemize}
     
 
