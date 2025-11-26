@@ -62,14 +62,14 @@
 
 
 
-\section{\underline{Introducción}}
-\subsection{\underline{Objetivo}}
+\section{Introducción}
+\subsection{Objetivo}
 En este presente informe, se busca detallar el proceso de selección, diseño y verificación de la etapa analógica de una balanza comercial, buscando aplicar los conocimientos tanto teóricos como prácticos adquiridos a lo largo de la asignatura, con respecto a los amplificadores operacionales. Además, se busca poder realizar un análisis del mercado para estimar precios y buscar realizar una alternativa competitiva.
 \\
 
 
 
-\subsection{\underline{Requerimientos}}
+\subsection{Requerimientos}
 A modo de requerimientos para esta balanza, se busca que esta cumpla con los siguientes requisitos:
 
 \begin{itemize}
@@ -80,9 +80,9 @@ A modo de requerimientos para esta balanza, se busca que esta cumpla con los sig
 
 
 
-\section{\underline{Desarrollo}}
-\subsection{\underline{Marco Teórico}}
-\subsubsection{\underline{Celda de Carga}}
+\section{Desarrollo}
+\subsection{Marco Teórico}
+\subsubsection{Celda de Carga}
 Una celda de carga es un transductor que convierte una fuerza mecánica (peso, tracción, compresión, flexión, etc.) en una señal eléctrica. Su funcionamiento se basa, casi siempre, en el uso de galgas extenso métricas (strain gauges del Inglés). Se conectan estas galgas en forma de puente de Wheatstone como se muestra en la siguiente imagen:
 \\
     \begin{figure}[H]
@@ -110,7 +110,7 @@ Esta variación de la resistencia eléctrica del material con respecto a la defo
 
 
 
-\subsubsection{\underline{Acondicionamiento Analógico de la Señal}}
+\subsubsection{Acondicionamiento Analógico de la Señal}
 Se tiene que la salida del Puente de Wheatstone es una salida diferencial proporcional a la deformación producida por el peso tal que para poder procesar esta señal de forma digital mediante un ADC, primero deberemos acondicionarla de forma analógica. Para ello resulta evidente que es necesario amplificar la señal para que el ADC pueda convertirla correctamente a una versión digitalizada de la misma y por lo tanto pueda ser mostrada al operario de la balanza.
 
 Se tiene entonces que se puede implementar tal diseño mediante un amplificador de instrumentación compuesto por 3 amplificadores operacionales individuales tal como se observa en la siguiente figura:
@@ -167,7 +167,7 @@ Se deduce entonces que la ganancia depende de múltiples valores de resistencias
 
 
 
-\subsection{\underline{Análisis de Mercado}}
+\subsection{Análisis de Mercado}
 Si bien resulta posible realizar un análisis teórico-práctico sobre como diseñar una balanza comercial utilizando solo herramientas de diseño de circuitos, en este informe también se abordará un análisis de mercado para entender cual será el presupuesto con el que se cuenta para poder elegir los componentes ya mencionados en el marco teórico.
 
 Para ello, se encontró que una balanza comercial que tenga las mismas especificaciones técnicas descritas en la sección 1.2 es la que se presenta a continuación:
@@ -196,7 +196,7 @@ Una vez deducido el costo unitario que puede tener la balanza, se procederá a e
 
 
 
-\subsection{\underline{Selección de Componentes}}
+\subsection{Selección de Componentes}
 En este apartado, se buscará dividir el presupuesto obtenido según (\ref{eq_9}) en los distintos componentes que conforman la placa y para ello se propone seguir la siguiente tabla:
 \\
     \begin{figure}[H]
@@ -205,12 +205,13 @@ En este apartado, se buscará dividir el presupuesto obtenido según (\ref{eq_9}
     \caption{Tabla de Costos por 1000 unidades} 
     \end{figure}
 
-Esta tabla se armo en base a los precios unitarios en DigiKey de cada componente si se comprarán en un lote de 1000 unidades. Cabe destacar que comparando el precio total obtenido de esta tabla, mas el costo unitario máximo obtenido según \ref{eq_9}, nos da un buen margen tanto de ganancia como de ajustarnos al mercado para reducir el precio de nuestro producto y consecuentemente volvernos más competitivos o poder usar este margen para poder afrontar los costes de envío que conlleva traer estos materiales a la Argentina.
+Esta tabla se armo en base a los precios unitarios en DigiKey de cada componente si se comprarán en un lote de 1000 unidades y sus precios fueron trasladados de Dolares a pesos Argentinos utilizando la cotización del Dolar Oficial para el dia de la fecha $1 \ [USD] = 1450 \ [Peso \ Argentino]$. 
+Se tiene que que comparando el precio total obtenido de esta tabla, mas el costo unitario máximo obtenido según \ref{eq_9}, nos da un buen margen tanto de ganancia como de ajustarnos al mercado para reducir el precio de nuestro producto y consecuentemente volvernos más competitivos o poder usar este margen para poder afrontar los costes de envío que conlleva traer estos materiales a la Argentina.
 \\
 
 
 
-\subsection{\underline{Diseño de la ganancia del circuito}}
+\subsection{Diseño de la ganancia del circuito}
 Se propone que el amplificador de instrumentación tenga una ganancia de tensión de 50 veces y para ello resulta necesario fijar algunos valores de resistencias tales como se presenta a continuación:
 \begin{itemize}
     \item $R_{1} = 4500 \ [\Omega]$
@@ -229,7 +230,7 @@ De esta forma, se verifica que:
 
 
 
-\subsection{\underline{Cálculo de Errores en Continua}}
+\subsection{Cálculo de Errores en Continua}
 En este apartado, se presentará una metodología de calculo para obtener los errores en continua de este amplificador y justificar la elección del microcontrolador dada la resolución en bits de su ADC. Para ello es fundamental primeramente determinar según la hoja de datos del LM342N los siguientes valores:
 \begin{itemize}
     \item $I_{os} = 5 \ [nA]$
@@ -242,7 +243,7 @@ En este apartado, se presentará una metodología de calculo para obtener los er
 
 
 
-\subsubsection{\underline{Errores del Amplificador Diferencial}}
+\subsubsection{Errores del Amplificador Diferencial}
 Sea el amplificador diferencial como el que se muestra en la siguiente figura:
 \\
     \begin{figure}[H]
@@ -262,12 +263,12 @@ Donde se deduce que:
 
 \begin{equation}
     \label{eq_12}
-    A_{vi} = \left(\frac{v_{o}}{v_{1}-v_{2}}\right)_{v_{oT}=0} = \frac{\alpha R A_{d}(0)}{\alpha R+ R} = \frac{\alpha A_{d}(0)}{\alpha+1}
+    A_{vi} = \left(\frac{v_{o}}{v_{1}-v_{2}}\right)_{v_{oT}=0} = \frac{\alpha R }{\alpha R+ R}A_{d}(0) = \frac{\alpha}{\alpha+1}A_{d}(0)
 \end{equation}
 
 \begin{equation}
     \label{eq_13}
-    T = \left(\frac{v_{o}}{v_{oT}}\right)_{v_{1}=v_{2}=0} = \frac{-R A_{d}(0)}{\alpha R+ R} = \frac{-A_{d}(0)}{\alpha+1}
+    T = \left(\frac{v_{o}}{v_{oT}}\right)_{v_{1}=v_{2}=0} = \frac{-R}{\alpha R+ R}A_{d}(0) = \frac{-A_{d}(0)}{\alpha+1}
 \end{equation}
 
 Tal que finalmente, resulta que la ganancia de lazo cerrado de forma ideal es igual:
@@ -336,13 +337,13 @@ Donde $\alpha = \frac{R_{6}}{R_{2}}=5$ dado lo definido en la sección anterior.
     \item \underline{Error total:} Finalmente, se deduce que el error total del amplificador diferencial es igual a la suma de todos los errores calculados, tal que:
     \begin{equation}
         \label{eq_25}
-        \Delta v_{o \ tot} = 25 \ [\mu V] + 12 \ [mV] + 0,3 \ [mV]+ 0,5 \ [mV] = 12,825 \ [mV]
+        \Delta v_{o \ dif} = 25 \ [\mu V] + 12 \ [mV] + 0,3 \ [mV]+ 0,5 \ [mV] = 12,825 \ [mV]
     \end{equation}
 \end{itemize}
 
 
 
-\subsubsection{\underline{Errores del $AO_1$ y $AO_2$}}
+\subsubsection{Errores del $AO_1$ y $AO_2$}
 Nótese que como estos dos amplificadores son simétricos, su calculo de errores es exactamente el mismo por lo tanto se opta por realizarlo dentro de una sola sección en el informe. Analizando la configuración vista tanto en $AO_1$ como en $AO_2$, se observa en ambos una configuración no inversora de ganancia tal como se muestra en la figura:
 \\
     \begin{figure}[H]
@@ -431,38 +432,40 @@ Donde $\beta = \frac{R_{4,1}}{R_{3}}=4,5$ dado lo definido en el principio de es
     \item \underline{Error total:} Finalmente, se deduce que el error total de los amplificadores $AO_{1}$ y $AO_{2}$ es igual a la suma de todos los errores calculados, tal que:
     \begin{equation}
         \label{eq_39}
-        \Delta v_{o \ tot} = 0,202 \ [\mu V] + 9 \ [mV] + 0,275 \ [mV]+ 0,5 \ [mV] = 9,775 \ [mV]
+        \Delta v_{o \ no \ inv} = 0,202 \ [\mu V] + 9 \ [mV] + 0,275 \ [mV]+ 0,5 \ [mV] = 9,775 \ [mV]
     \end{equation}
 \end{itemize}
 
 
 
-\subsubsection{\underline{Error Total del Circuito y Numero de Bits del Conversor}}
+\subsubsection{Error Total del Circuito y Numero de Bits del Conversor}
 Finalmente se concluye que la suma de todos los errores de los 3 operacionales analizados converge en el error total del amplificador de instrumentación, de modo que:
 
 \begin{equation}
     \label{eq_40}
-    \Delta v_{o \ Amp \ Inst} =  12,825 \ [mV] + 9,775 \ [mV] + 9,775 \ [mV] = 32,375 \ [mV]
+    \Delta v_{o \ tot} =  12,825 \ [mV] + 9,775 \ [mV] + 9,775 \ [mV] = 32,375 \ [mV]
 \end{equation}
 
-De aquí, podemos verificar la elección del microcontrolador ya que la resolución de su ADC, depende exclusivamente del análisis de error efectuado recientemente, tal que la resolución mínima de bits que debe tener tal conversor es de:
+De aquí, podemos verificar la elección del microcontrolador ya que la resolución de su ADC, depende practicamente del análisis de error efectuado para los amplificadores operacionales, tal que la resolución mínima de bits que debe tener tal conversor es de:
 
 \begin{equation}
     \label{eq_41}
-    n = log_{2}(\frac{FE}{\Delta v_{o \ Amp \ Inst}}) = log_{2}(\frac{5 \ [V]}{32,375 \ [mV]}) = 7,22 \ [bits]
+    n = log_{2}\left(\frac{FE}{\Delta v_{o \ tot}}\right) = log_{2}\left(\frac{5 \ [V]}{32,375 \ [mV]}\right) = 7,22 \ [bits]
 \end{equation}
 
-Finalmente, se puede optar por elegir un PIC16F887 ya utilizado en asignaturas como Electrónica Digital II ya que si bien su resolución es de 10 bits, podemos utilizar no toda la resolución del ADC del PIC para no muestrear errores analógicos y además aprovechar el mayor poder de computo que tiene este procesador para realizar otras tareas como mostrar el peso en el display, o utilizar los pulsadores seleccionados entre otras funcionalidades que ya sobrepasan los fines de este trabajo práctico. Esta opción resulta ser la mas lógica dada la dificultad de encontrar microcontroladores con resolución menor a 10 bits, además de que utilizar un ADC externo a la placa y de menor resolución, implicaría aumentar aún los costos del producto reduciendo su competitividad en el mercado.
+Finalmente, se puede optar por elegir un PIC16F887 ya utilizado en asignaturas como Electrónica Digital II ya que si bien su resolución es de 10 bits, podemos elegir no utilizar toda la resolución del ADC del PIC para no muestrear errores analógicos y además aprovechar el mayor poder de computo que tiene este microcontrolador para realizar otras tareas como mostrar el peso en el display, o utilizar los pulsadores para realizar distintas funcionalidades (pasar de kg a lb por ejemplo) que ya sobrepasan los fines de este trabajo práctico.
+
+Esta opción resulta ser la mas lógica dada la dificultad de encontrar microcontroladores con resolución menor a 10 bits, además de que utilizar un ADC externo al microcontrolador y de menor resolución, implicaría aumentar aún mas los costos del producto reduciendo su competitividad en el mercado.
 
 
 
-\section{\underline{Conclusión}}
+\section{Conclusión}
 A lo largo de este informe se ha desarrollado el proceso de diseño de una balanza comercial tanto en un aspecto teórico utilizando las ecuaciones y métodos de análisis desarrollados a lo largo de la asignatura, tanto así también en un aspecto comercial, buscando ofrecer una alternativa competitiva ante el mercado buscando la mejor combinación entre calidad y precio de los componentes dado un análisis circuital y analítico de un amplificador de instrumentación.
 \\
 
 
 
-\section{\underline{Bibliografía}}
+\section{Bibliografía}
 \begin{itemize}
     \item \href{https://www.straingauges.cl/blog-details}{Figura 1: Puente de Wheatstone}.
     \item \href{https://www.flintec.com/es/aprender/sensor-de-peso/celulas-de-carga}{Figura 2: Galga extensométrica.}
@@ -485,5 +488,4 @@ A lo largo de este informe se ha desarrollado el proceso de diseño de una balan
     \item \href{https://fcefyn.aulavirtual.unc.edu.ar/pluginfile.php/951691/mod_resource/content/1/Gu%C3%ADa%20de%20Problemas%20Sintesis%20Redes%20Activas%202025.pdf}{Figura 6: Amplificador Diferencial (Problema 2.1).}
     \item \href{https://fcefyn.aulavirtual.unc.edu.ar/pluginfile.php/951691/mod_resource/content/1/Gu%C3%ADa%20de%20Problemas%20Sintesis%20Redes%20Activas%202025.pdf}{Figura 6: Amplificador Diferencial (Problema 1.2).}
 \end{itemize}
-
 \end{document}
