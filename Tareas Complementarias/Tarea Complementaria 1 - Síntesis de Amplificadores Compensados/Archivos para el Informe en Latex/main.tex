@@ -162,7 +162,7 @@ La ecuación (\ref{eq_5}) será la ecuación de partida para relacionar los coef
         \label{eq_16}
         \Omega_G^4 + \frac{1}{Q_p^2} \Omega_G^2 = 1
     \end{equation}
-    Si definimos que: $x=\Omega_G$ y aplicando lo deducido en (\ref{eq_10}), el sistema se simplifica a una ecuación cuadrática igual a:
+    Si definimos que: $x=\Omega_G^2$ y aplicando lo deducido en (\ref{eq_10}), el sistema se simplifica a una ecuación cuadrática igual a:
     \begin{equation}
         \label{eq_17}
         x^2 + 2x - 1 = 0
@@ -293,7 +293,7 @@ De aquí, se deduce que solo se busca la solución con frecuencia normalizada de
     \label{eq_38}
     x = \frac{2-\frac{1}{Q_p^2} + \sqrt{\left(\frac{1}{Q_p^2}-2\right)^2 + 4}}{2}
 \end{equation}
-Reemplazando a $x$ por $\Omega_H$, se deduce finalmente que:
+Reemplazando a $x$ por $\Omega_H^2$, se deduce finalmente que:
 \begin{equation}
     \label{eq_39}
     \Omega_H = \sqrt{\frac{2-\frac{1}{Q_p^2} + \sqrt{\left(\frac{1}{Q_p^2}-2\right)^2 + 4}}{2}}
@@ -333,7 +333,7 @@ De aquí, se deduce que solo se busca la solución con frecuencia crítica norma
     \label{eq_43}
     x = \frac{-\frac{1}{Q_p^2} + \sqrt{\left(\frac{1}{Q_p^2}\right)^2 + 4 }}{2}
 \end{equation}
-Reemplazando a $x$ por $\Omega_G$, se deduce finalmente que:
+Reemplazando a $x$ por $\Omega_G^2$, se deduce finalmente que:
 \begin{equation}
     \label{eq_44}
     \Omega_G = \sqrt{\frac{-\frac{1}{Q_p^2} + \sqrt{\left(\frac{1}{Q_p^2}\right)^2 + 4 }}{2}}
@@ -531,11 +531,6 @@ plt.grid(True)
 plt.legend()
 plt.show()
 \end{minted}
-\end{itemize}
-    
-
-
-\end{document}
 \end{itemize}
     
 
