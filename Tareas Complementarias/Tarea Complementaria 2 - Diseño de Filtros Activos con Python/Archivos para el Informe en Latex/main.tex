@@ -1,0 +1,1005 @@
+\documentclass[12pt,a4paper]{article}
+
+% Paquetes básicos
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{siunitx} % Ángulos
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{setspace}
+\usepackage{multirow}
+\usepackage{minted} % Códigos
+\onehalfspacing
+
+
+% Datos
+\author{Nombre y Apellido \\ Legajo: XXXXX}
+\date{\today}
+
+\begin{document}
+
+% Carátula personalizada
+\begin{titlepage}
+    \centering
+    \includegraphics[width=0.25\textwidth]{escudo.png} 
+    \hspace{1cm}
+    \includegraphics[width=0.3\textwidth]{download.png} \\[1cm]
+
+    {\large \textbf{UNIVERSIDAD NACIONAL DE CÓRDOBA} \\[0.5cm]}
+    {\large \textbf {FACULTAD DE CIENCIAS EXACTAS, FÍSICAS Y NATURALES} \\[1cm]}
+    {\Large SÍNTESIS DE REDES ACTIVAS \\[1cm]}
+
+    \rule{\textwidth}{0.5pt} \\[0.5cm]
+    {\Large \textbf{Tarea Complementaria N°2} \\[0.3cm]}
+    {\Large \textbf{Diseño de Filtros Activos con Python} \\[0.3cm]}
+    \rule{\textwidth}{0.5pt} \\[1cm]
+
+\begin{tabular}{l l}
+\textbf{Profesor Titular:} & Dr. Ing. Ferreyra Pablo \\
+\textbf{Profesor Adjunto:} & Ing. Reale Cesar \\
+\\
+\textbf{Alumnos:} & Dávila Tomassi, Carlos Valentino \\
+ & Mendes Rosa, Agustín \\
+ & Monja, Ernesto Joaquín \\
+\end{tabular}\\[3cm]
+
+{\centering Año 2025 \par}
+
+\end{titlepage}
+
+
+
+% Índice
+\tableofcontents
+\newpage
+\indent
+
+
+
+\section{Introducción}
+\subsection{Consigna}
+En este presente informe, se detalla de forma conceptual el funcionamiento de las distintas librerías que cuenta el programa Python para poder sintetizar filtros activos en base a ciertos requerimientos que le presente el programador tal así como se realizo para el \href{https://github.com/ErnestMonja/Sintesis_de_Redes_Activas/blob/main/Trabajo%20Pr%C3%A1ctico%20N%C2%B04%20-%20Filtros%20Activos/TP4%20-%20Filtros%20Activos.pdf}{Trabajo Práctico N°4} de esta asignatura.
+
+
+
+\section{Desarrollo}
+\subsection{Introducción a los Filtros Activos}
+De acuerdo a la bibliografía utilizada, se define a un filtro como una red utilizada para cambiar la forma del espectro de la frecuencia de una señal eléctrica y estos son clasificados de acuerdo a la función que realizan, es decir que forma le dan al espectro de frecuencias.
+
+Como se menciono anteriormente, los filtros se definen de acuerdo a que forma le dan al espectro de las frecuencias lo cual implica un uso de las Transformadas de Laplace y consecuentemente el análisis de funciones de transferencias. De acuerdo a la forma de la función de transferencia que tenga el filtro, es decir sus ceros, polos y constantes, se definirá la función del filtro tal como se presenta en la siguiente figura:
+
+\begin{figure}[H]
+    \centering
+    \label{fig_1}
+    \includegraphics[width=0.3\linewidth]{Figura 1.png}
+    \caption{Funciones de Transferencia de distintos tipos de filtros.}
+    \label{fig:fig_1}
+\end{figure}
+
+La bibliografía utilizada menciona como sintetizar las funciones de transferencia de cualquier tipo de filtro en componentes que, mediante una topología activa del filtro, definirán los elementos circuitales a utilizar, sin embargo no se realiza un análisis de como deducir las funciones de transferencia de acuerdo a las especificaciones de un filtro (por ejemplo, frecuencias de corte, atenuaciones máximas y mínimas, etc.).
+
+Se busca entonces en este informe, detallar el proceso de como realizar funciones de transferencia de acuerdo a las especificaciones de un filtro utilizando librerías de Python.
+
+
+
+\subsection{Python como Software de Diseño}
+La elección de Python como software de diseño para los filtros se debe a la ventaja que este posee al ser Software Gratuito y de Código Abierto, permite entender los algoritmos que ejecutan los comandos de sus librerías ademas de ser un lenguaje de programación de uso general lo que no nos limita únicamente a fines matemáticos (como si lo hace Matlab/Octave) o fines electrónicos (como PSpice/LTSpice).
+
+
+
+\subsubsection{Obtención de Funciones de Transferencia a través de Especificaciones}
+La librería $SciPy$ de Python ofrece, entre tantas funciones, el módulo $.signal$ el cual se dedica al análisis y procesamiento de señales y sistemas lineales. Este módulo carece de los conocimientos de electrónica utilizados para sintetizar filtros con topologías Sallen-Key por ejemplo, pero si sabe determinar de forma matemática las funciones de transferencia que representan los requerimientos de un filtro, es decir por ejemplo:
+
+\begin{itemize}
+    \item La cantidad de polos que necesita un filtro Butterworth
+    \item La ubicación del Ripple (Banda de Paso o de Rechazo) de un filtro Chebyshev
+    \item La aproximación deseada para un filtro.
+    \item Si el filtro será digital o analógico.
+\end{itemize}
+
+Entre otras funciones. Para la obtención de las funciones de transferencia, este módulo cuenta con 5 funciones que nos entregan distintos tipos de aproximaciones para los filtros, las cuales se las presenta en la siguiente tabla:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{| c | c | c |} \hline
+        \textbf{Función} & \textbf{Aproximación} & \textbf{Característica Principal de la Aproximación} \\ \hline
+        \multirow{2}{*}{$signal.butter()$} & \multirow{2}{*}{Butterworth} & \multirow{2}{9,5cm}{Máxima Planicidad en la Banda de Paso.} \\ & & \\ \hline
+        \multirow{2}{*}{$signal.cheby1()$} & \multirow{2}{*}{Chebyshev I} & \multirow{2}{9,5cm}{El ripple del Chebyshev se encuentra en la Banda de Paso.} \\ & &\\ \hline
+        \multirow{2}{*}{$signal.cheby2()$} & \multirow{2}{*}{Chebyshev II} & \multirow{2}{9,5cm}{El ripple del Chebyshev se encuentra en la Banda de Rechazo.}\\ & &\\ \hline
+        \multirow{2}{*}{$signal.ellip()$} & \multirow{2}{*}{Elíptica} & \multirow{2}{9,5cm}{Hay ripple en ambas bandas, pero entre ellas hay una transición mas abrupta.}\\ & & \\ \hline
+        \multirow{2}{*}{$signal.bessel()$} & \multirow{2}{*}{Bessel} & \multirow{2}{9,5cm}{Se obtiene Fase casi lineal en la Banda de Paso.}\\ & & \\ \hline
+    \end{tabular}
+    \caption{Funciones principales del módulo $SciPy$.}
+    \label{tab:tb_1}
+\end{table}
+
+Las funciones presentadas en la Tabla \ref{tab:tb_1}, surgen todas y cada una de ellas de una función más general denominada $iirfilter()$, la cual ademas de tomar los parámetros que se listarán a continuación, recibe una especificación de que aproximación se utiliza para el filtro (Véase en el Anexo 1: Fragmento de la librería $SciPy$, donde se muestra la función $iirfilter()$). Veamos entonces los parámetros típicos que toma esta función como entrada:
+
+\begin{itemize}
+    \item \underline{n:} Orden del filtro pasa bajos normalizado. Se tiene que la librería $SciPy$, genera filtros pasa bajos normalizados los cuales luego mediante transformaciones de la variable $s$, los transforma a otro tipo de filtros tal como se presenta en la siguiente tabla:
+    \begin{table}[H]
+        \centering
+        \renewcommand{\arraystretch}{1.4}
+        \begin{tabular}{|c|c|c|c|} \hline
+        \textbf{Tipo de filtro} & \textbf{Transformación en $s$} & \textbf{Parámetros} & \textbf{Orden final} \\ \hline
+            Pasa bajos (LP) & $s \;\rightarrow\; \frac{s}{\omega_c}$ & $\omega_c$: frecuencia de corte & $N$ \\ \hline
+            Pasa altos (HP) & $s \;\rightarrow\; \frac{\omega_c}{s}$ & $\omega_c$: frecuencia de corte & $N$ \\ \hline
+            Pasa banda (BP) & $s \;\rightarrow\; \frac{s^2 + \omega_0^2}{BWs}$ & $\omega_0 = \sqrt{\omega_1\omega_2}$ & $2N$ \\ \hline
+            Rechaza banda (BS) & $s \;\rightarrow\; \frac{BW s}{s^{2} + \omega_{0}^{2}}$ & $\omega_{0} = \sqrt{\omega_{1}\omega_{2}}$ & $2N$ \\ \hline
+        \end{tabular}
+        \caption{Transformaciones de frecuencia aplicadas al prototipo pasa bajos de orden $N$.}
+        \label{tab:tb_2}
+    \end{table}
+    En la última columna, se define al orden final del filtro, el cual nos indica que si bien se puede indicar que el filtro sea de orden $N$, dada la transformación utilizada, el orden del mismo puede aumentar a $2N$. Por último, se define a $BW = \omega_{2} - \omega_{1}$ siendo este el ancho de banda angular del filtro pasa banda o rechaza banda. 
+    \item \underline{rp:} Ripple en $[dB]$ para la banda de paso o la banda de rechazo si se trata de un filtro pasa banda o rechaza banda respectivamente.
+    \item \underline{wp:} Frecuencia crítica normalizada de los polos.
+    \item \underline{btype:} Tipo de filtro, este puede ser:
+    \begin{itemize}
+        \item btype = 'lowpass': Filtro pasa bajos.
+        \item btype = 'highpass': Filtro pasa altos.
+        \item btype = 'bandpass': Filtro pasa banda.
+        \item btype = 'bandstop': Filtro rechaza banda.
+    \end{itemize}
+    \item \underline{analog:} Indica si se busca diseñar un filtro en tiempo continuo o discreto mediante una variable booleana (es decir, $'true'$ o $'false'$). Este parámetro es de vital importancia ya que no es lo mismo diseñar un filtro analógico, es decir en tiempo continuo que en tiempo discreto ya que la herramienta de análisis y traspaso al dominio de la frecuencia cambia. Esto quiere decir que si en tiempo continuo se utiliza la Transformada de Laplace, para tiempo discreto se utiliza la Transformada Z.
+    \item \underline{output:} Se trata de un parámetro opcional el cual me indica el tipo de salida de la definición. El parámetro de salida puede ser:
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|c|c|} \hline
+            \textbf{output} & \textbf{Descripción} \\ \hline
+             $'ba'$ o $'tf'$ & Coeficientes de la Función de Transferencia \\ \hline
+             $'zpk'$ & Cero, Polo y Constante \\ \hline
+             $'ss'$ & Representación en Variables de Estado \\ \hline
+             $'sos'$ & Representación en Bicuadráticas \\ \hline
+        \end{tabular}
+        \caption{Valores del parámetro 'output'}
+        \label{tab:tb_3}
+    \end{table}
+    \item \underline{fs:} Se define aquí la frecuencia de sampleo utilizada en caso de que se este diseñando un filtro de tipo digital. Si el filtro es analógico, este parámetro no es necesario utilizarlo.
+\end{itemize}
+
+Para aplicar estos conceptos, veamos el siguiente ejemplo, donde se utiliza la aproximación de Chebyshev I, para diseñar un filtro rechaza banda, en un rango de frecuencias de $1000 \ [Hz]$ a $2000 \ [Hz]$:
+
+\begin{minted}[linenos]{python}
+import numpy as np
+from scipy import signal
+
+## Ancho de Banda a Rechazar:
+f1 = 1000                                       # Frecuencia Inferior: 1000 [Hz]
+f2 = 2000                                       # Frecuencia Superior: 2000 [Hz]
+Wbw = [2*np.pi*f1, 2*np.pi*f2]
+
+## Aproximación de un filtro rechaza banda, analógico y de segundo orden, con un 
+## ripple en la banda de rechazo de 1 [dB] que sigue las frecuencias listadas 
+## anteriormente.
+num, den = signal.cheby1(N = 2,                 # Filtro de 2do Orden
+                        rp = 1,                 # Ripple de 1 [dB]
+                        Wn = Wbw,               # Frecuencias a Rechazar
+                        btype = 'bandstop',     # Filtro rechaza banda
+                        analog = True,          # Filtro analógico
+                        output = 'ba')          # Salida del tipo: F(s) = num/den
+
+## Impresión de los parámetros obtenidos:
+print("Numerador:", num)
+print("Denominador:", den)
+\end{minted}
+
+Al compilar este código, obtendremos en la terminal el siguiente mensaje impreso:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Figura 2.png}
+    \caption{Salida por consola del Ejemplo 1.}
+    \label{fig:fig_2}
+\end{figure}
+
+Observamos en este ejemplo una peculiar característica de la forma de trabajar que tiene esta librería; donde si bien se definió a un filtro rechaza banda de $2^{do}$ orden, al compilar el código se obtiene una función de transferencia de $4^{to}$ orden dado su denominador.
+
+Esto se debe a que la librería de Python $SciPy$ siempre parte de un prototipo de pasa bajos el cual mediante transformaciones $HP$, $BP$ ó $BS$ (High-Pass, Band-Pass y Band-Stop del Inglés) lo transforma en el filtro deseado de acuerdo a la Tabla \ref{tab:tb_2}. Justamente en este ejemplo, la transformación utilizada es la del rechaza banda, la cual duplica el orden del filtro original, ya que cada polo del prototipo pasa bajos se transforma en un par de polos complejos conjugados en el rechaza banda; y lo mismo es de esperarse si se utiliza un filtro pasa banda de las mismas características.
+
+Si bien hemos obtenido una función de transferencia, no se trata de las formas bicuadráticas que se utilizan en la bibliografía para sintetizar filtro de forma activa, por lo tanto se requiere un paso adicional para obtener funciones de transferencia de $2^{do}$ orden y poder realizar los filtros activos.
+
+
+\subsubsection{Representación de la Función de Transferencia en Bicuadráticas}
+Los parámetros que nos entregan las funciones descritas en el apartado anterior son el numerador y denominador de la función de transferencia global del filtro y suelen ser de la forma: 
+
+\begin{equation}
+    \label{eq_1}
+    T(s) = \frac{b_{m}s^{m} + b_{m - 1}s^{m - 1} + ... + b_{2}s^{2} + b_{1}s + b_{0}}{a_{n}s^{n} + a_{n - 1}s^{n - 1} + ... + a_{2}s^{2} + a_{1}s + a_{0}}
+\end{equation}
+
+Sin embargo se tiene que según la Figura \ref{fig:fig_1}, un filtro no puede ser de orden mayor a $2$ tanto en el denominador debido a que se llegan a los límites de estabilidad del amplificador, tal así como el numerador no puede exceder el grado del denominador por cuestiones de realizabilidad de redes. Por lo tanto debemos hacer uso de la descomposición en bicuadráticas y para ello haremos uso de la función $signal.tf2sos()$ que nos ofrece $SciPy$.
+
+Esta función internamente separa la función de transferencia mostrada en (\ref{eq_1}) en distintas bicuadráticas. Para ello primeramente se hace uso de forma interna de la función $signal.tf2zpk()$ la cual descompone a la función de transferencia entre sus ceros, polos y contante para luego agruparlos de forma conveniente de acuerdo a su cercanía al circulo unitario. Se incluye en este informe (Véase el Anexo 2) un fragmento del código de la librería de $SciPy$, el cual explica como funciona este algoritmo.
+
+Al ejecutar esta función, obtendremos una función de transferencia del siguiente estilo:
+    
+\begin{equation}
+    \label{eq_2}
+    T_{i}(s) = \frac{b_{0,i}s^{2} + b_{1,i}s + b_{2,i}}{s^{2} + a_{1,i}s + a_{2,i}}
+\end{equation}
+
+De modo tal que se puede llegar a la función original mediante una productoria de todas las $T_{i}(s)$, es decir:
+
+\begin{equation}
+    \label{eq_3}
+    T(s) = \prod_{i=1}^{\infty}T_{i}(s)
+\end{equation}
+
+Al compilar esta función devuelve un array de 6 elementos, los cuales representan los coeficientes de la función de transferencia descrita en (\ref{eq_2}). Nótese que $SciPy$ siempre normaliza el termino $a_{0} = 1$, por lo que debe ser tenido en cuenta cuando se obtienen los coeficientes de las bicuadráticas.
+
+Veamos entonces, una aplicación de esta función al Ejemplo 1, donde se diseño un filtro rechaza banda, con una banda de rechazo de $1000 \ [Hz]$ a $2000 \ [Hz]$, pero ahora buscaremos obtener los parámetros de la función $signal.tf2sos()$, tal que:
+
+\begin{minted}[linenos]{python}
+import numpy as np
+from scipy import signal
+import matplotlib.pyplot as plt
+
+## Ancho de Banda a Rechazar:
+f1 = 1000                                       # Frecuencia Inferior: 1000 [Hz]
+f2 = 2000                                       # Frecuencia Superior: 2000 [Hz]
+Wbw = [2*np.pi*f1, 2*np.pi*f2]
+
+## Aproximación de un filtro rechaza banda, analógico y de segundo orden, con un 
+## ripple en la banda de rechazo de 1 [dB] que sigue las frecuencias listadas 
+## anteriormente.
+num, den = signal.cheby1(N = 2,                 # Filtro de 2do Orden
+                        rp = 1,                 # Ripple de 1 [dB]
+                        Wn = Wbw,               # Frecuencias a Rechazar
+                        btype = 'bandstop',     # Filtro rechaza banda
+                        analog = True,          # Filtro analógico
+                        output = 'ba')          # Salida del tipo: F(s) = num/den
+
+## Impresión de los parámetros obtenidos:
+print("Numerador:", num)
+print("Denominador:", den)
+
+## Descomposición en ceros, polos y constante
+z, p, k = signal.tf2zpk(num, den)
+print("Ceros: ", z)
+print("Polos: ", p)
+print("Constante: ", k)
+
+## Descomposición en bicuadraticas mediante sos
+sos = signal.tf2sos(num,den)
+print("Coeficientes del SOS:", sos)
+\end{minted}
+
+Al compilar este código, obtendremos la siguiente salida por consola:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Figura 3.png}
+    \caption{Salida por consola del Ejemplo 2.}
+    \label{fig:placeholder}
+\end{figure}
+
+A este código, se le han incluido el uso de la función $signal.tf2zpk()$ la cual nos entrega los ceros, polos y constante, y ademas se incluyo el mencionado uso de la función $signal.tf2sos()$ para obtener los coeficientes de la función bicuadrática. Se resume que los datos obtenidos y las funciones se pueden listar a continuación:
+
+\begin{itemize}
+    \item \underline{Numerador:} $[8,91x10^{-1}s^{4} + 0s^{3} + 1,40x10^{8}s^{2} + 0s + 5,55x10^{15}]$
+    \item \underline{Denominador:} $[s^{4} + 6,25x10^{3}s^{3} + 1,93x10^{8}s^{2} + 4,93x10^{11}s + 6,23x10^{15}]$
+    \item \underline{Función de transferencia del filtro:} Se presenta entonces de acuerdo a los dos items anteriores a la función del filtro:
+    \begin{equation}
+        \label{eq_4}
+        T(s) = \frac{8,91x10^{-1}s^{4} + 0s^{3} + 1,40x10^{8}s^{2} + 0s + 5,55x10^{15}}{s^{4} + 6,25x10^{3}s^{3} + 1,93x10^{8}s^{2} + 4,93x10^{11}s + 6,23x10^{15}}
+    \end{equation}
+    \item \underline{Ceros:} $z_{1,2} = -1,21894x10^{-7} \pm j8885,76595 ; z_{3,4} =  1,21893x10^{-7} \pm j8885,76579]$
+    \item \underline{Polos:} $p_{1,2} = -2001,31 \pm j11672,49 ; p_{3,4}= -1126.66 \pm j6571,17$
+    \item \underline{Constante:} $K = 0,891250$
+    \item \underline{Bicuadráticas:} Se presenta las dos ecuaciones bicuadráticas que compondrán a este filtro:
+    \begin{equation}
+        \label{eq_5}
+        T_{1}(s) = \frac{8,91x10^{-1}s^{2} + 2,17x10^{-7}s + 7,03x10^{-7}}{s^{2} + 4x10^3s + 1,4x10^{8}}
+    \end{equation}
+    \begin{equation}
+        \label{eq_6}
+        T_{2}(s) = \frac{s^{2} - 2,43x10^{-7} + 7,89x10^{7}}{s^{2} + 2,25x10^{3} + 4,44x10^{7}}
+    \end{equation}
+\end{itemize}
+
+
+
+\subsubsection{Gráficas en Python}
+Si bien la descripción general de obtener un filtro y separarlo en distintas funciones bicuadráticas para luego poder sintetizarlo en un filtro activo siguiendo la bibliografía ya fue expuesto en los apartados anteriores, en esta sección se busca introducir el concepto y la habilidad de poder diseñar gráficas de bode para nuestro filtro, las cuales nos permitirán analizar el sistema desde un aspecto mas visual que simplemente analizando números.
+
+En nuestro contexto resultan útiles las gráficas de bode y de respuesta en frecuencia para verificar que las frecuencias de corte sean las indicadas en el diagrama de módulo, y de los desfasajes en el tiempo que le ocurren a las señales de entrada al entrar al filtro en el diagrama de fase. Además, aquí podemos analizar la estabilidad del amplificador operacional, ya que este al no ser ideal, tiene en su interior una respuesta en frecuencia propia que puede alterar el comportamiento del filtro.
+
+Para esto haremos uso de la interfaz $pyplot$ dentro de la librería $matplotlib$ la cual trae multitud de herramientas gráficas tales como diagramas de bode, respuesta en frecuencia, respuesta al escalón o inclusive graficar funciones, tal así como se realizo para la \href{https://github.com/ErnestMonja/Sintesis_de_Redes_Activas/blob/main/Tareas%20Complementarias/Tarea%20Complementaria%201%20-%20S%C3%ADntesis%20de%20Amplificadores%20Compensados/Tarea%20Complementaria%201.pdf}{Tarea Complementaria N°1} donde se obtuvieron funciones y luego se realizaron gráficos de estas funciones
+
+Para ello, se utiliza la función $signal.bode()$ la cual toma como parámetros una función de transferencia, y devuelve un array de 3 elementos que representan la frecuencia (en radianes sobre segundo), la magnitud y la fase para poder armar los diagramas de bode.
+
+Veamos entonces como implementar estos códigos para diseñar ahora un filtro en el mismo rango de frecuencias que para el ejemplo 1 y 2, pero ahora el filtro será un filtro pasa banda y estará aproximado por Butterworth en lugar de Chevyshev I. Se presenta a continuación el código utilizado:
+
+\begin{minted}[linenos]{python}
+import numpy as np
+from scipy import signal
+import matplotlib.pyplot as plt
+
+## Ancho de Banda a Aceptar:
+f1 = 1000                                       # Frecuencia Inferior: 1000 [Hz]
+f2 = 2000                                       # Frecuencia Superior: 2000 [Hz]
+Wbw = [2*np.pi*f1, 2*np.pi*f2]
+
+## Aproximación de un filtro pasa banda, analógico y de segundo orden que sigue 
+## las frecuencias listadas anteriormente.
+num, den = signal.butter(N = 2,                 # Filtro de 2do Orden
+                        Wn = Wbw,               # Frecuencias a Rechazar
+                        btype = 'bandpass',     # Filtro pasa banda
+                        analog = True,          # Filtro analógico
+                        output = 'ba')          # Salida del tipo: F(s) = num/den
+
+
+## Impresión de los parámetros obtenidos:
+print("Numerador:", num)
+print("Denominador:", den)
+
+## Descomposición en ceros, polos y constante
+z, p, k = signal.tf2zpk(num, den)
+print("Ceros: ", z)                             # [0 ; 0]
+print("Polos: ", p)                             # [-2775.72 +- j11124.47 ;
+                                                #  -1667.15 +- j6681.59]
+print("Constante: ", k)                         # [39478417.60]
+
+## Descomposición en bicuadraticas mediante sos
+sos = signal.tf2sos(num,den)                    # [[3.94784176e+07 0 0 ;
+                                                # 1 5.55144899e+03 1.31458664e+08]
+print("Coeficientes del SOS:", sos)             # [1 0 0 ;
+                                                # 1 3.33431689e+03 4.74231339e+07]]
+
+## Diagrama de Bode de cada bicuadrática:
+plt.figure()
+for i in range(len(sos)):
+    w, mag, _ = signal.bode((sos[i, :3], sos[i, 3:]))
+    plt.semilogx(w/(2*np.pi), mag, label=f'Etapa {i+1}')
+plt.xlabel('Frecuencia [Hz]')
+plt.ylabel('Magnitud [dB]')
+plt.title('Respuesta individual de cada biquad')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+## Respuesta en Frecuencia:
+w, mag, phase = signal.bode((num, den))
+
+# Gráfico de Magnitud
+plt.figure()
+plt.semilogx(w / (2*np.pi), mag)
+plt.xlabel('Frecuencia [Hz]')
+plt.ylabel('Magnitud [dB]')
+plt.title('Diagrama de Bode - Módulo')
+plt.grid(True)
+
+# Gráfico de Fase
+plt.figure()
+plt.semilogx(w / (2*np.pi), phase)
+plt.xlabel('Frecuencia [Hz]')
+plt.ylabel('Fase [°]')
+plt.title('Diagrama de Bode - Fase')
+plt.grid(True)
+plt.show()
+\end{minted}
+
+De este código, se deducen los siguientes diagramas de bode de módulo y fase para el filtro:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figura 4.png}
+    \caption{Diagrama de Bode - Módulo del Ejemplo 3 del Filtro Pasa Banda}
+    \label{fig:fig_4}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figura 5.png}
+    \caption{Diagrama de Bode - Fase del Ejemplo 3 del Filtro Pasa Banda}
+    \label{fig:fig_5}
+\end{figure}
+
+Por último, se presenta la respuesta en frecuencia individual de cada una de las bicuadráticas en su diagrama de bode de módulo:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figura 6.png}
+    \caption{Diagrama de Bode - Módulo del Ejemplo 3 de cada bicuadrática}
+    \label{fig:fig_6}
+\end{figure}
+
+Se observa aquí la naturaleza propia del algoritmo, el cual genera 2 filtros pasa bajos tal como se espera, ya que si bien se eligió un filtro pasa banda, esta librería parte de un filtro prototipo pasa bajo el cual luego le realiza una transformación para obtener el filtro deseado. La multiplicación de ambas etapas, nos dará el filtro pasa banda deseado, el cual seguirá el diagrama de bode presentado en la Figura \ref{fig:fig_4}.
+
+
+
+\section{Conclusión}
+A lo largo de este informe, se realizo una detallada explicación sobre el funcionamiento de las librerías de Python dedicadas a la obtención de funciones de transferencia de filtros dadas ciertas especificaciones del mismo. También se realizaron múltiples ejemplos de diseño para entender como es que funcionan y como realizar este proceso utilizando Python con todos los algoritmos que incluye esta librería.
+
+
+
+\section{Bibliografía}
+\begin{itemize}
+    \item \href{https://fcefyn.aulavirtual.unc.edu.ar/pluginfile.php/960585/mod_folder/content/0/%5BGobind_Daryanani%5D_Principles_of_Active_Network_Sy%28z-lib.org%29.pdf?forcedownload=1}{Principles of Active Network Synthesis and Design - G. Daryanani}
+    \item \href{https://github.com/ErnestMonja/Sintesis_de_Redes_Activas/tree/main}{Repositorio de GitHub con los códigos y demás archivos de este informe}
+    \item \href{https://docs.scipy.org/doc/scipy/tutorial/signal.html#filtering}{Documentación del módulo signal de la librería SciPy}
+    \item \href{https://matplotlib.org/3.5.3/api/_as_gen/matplotlib.pyplot.html}{Documentación del módulo pyplot de la librería matplotlib} 
+\end{itemize}
+
+
+
+\section{Anexo}
+\begin{itemize}
+    \item \underline{Anexo 1:} Extracto de la función $signal.iirfilter()$:
+    \begin{minted}[linenos]{python}
+def iirfilter(N, Wn, rp=None, rs=None, btype='band', analog=False,
+              ftype='butter', output='ba', fs=None):
+    """
+    IIR digital and analog filter design given order and critical points.
+
+    Design an Nth-order digital or analog filter and return the filter
+    coefficients.
+
+    Parameters
+    ----------
+    N : int
+        The order of the filter.
+    Wn : array_like
+        A scalar or length-2 sequence giving the critical frequencies.
+
+        For digital filters, `Wn` are in the same units as `fs`. By default,
+        `fs` is 2 half-cycles/sample, so these are normalized from 0 to 1,
+        where 1 is the Nyquist frequency. (`Wn` is thus in
+        half-cycles / sample.)
+
+        For analog filters, `Wn` is an angular frequency (e.g., rad/s).
+
+        When Wn is a length-2 sequence, ``Wn[0]`` must be less than ``Wn[1]``.
+    rp : float, optional
+        For Chebyshev and elliptic filters, provides the maximum ripple
+        in the passband. (dB)
+    rs : float, optional
+        For Chebyshev and elliptic filters, provides the minimum attenuation
+        in the stop band. (dB)
+    btype : {'bandpass', 'lowpass', 'highpass', 'bandstop'}, optional
+        The type of filter.  Default is 'bandpass'.
+    analog : bool, optional
+        When True, return an analog filter, otherwise a digital filter is
+        returned.
+    ftype : str, optional
+        The type of IIR filter to design:
+
+            - Butterworth   : 'butter'
+            - Chebyshev I   : 'cheby1'
+            - Chebyshev II  : 'cheby2'
+            - Cauer/elliptic: 'ellip'
+            - Bessel/Thomson: 'bessel'
+
+    output : {'ba', 'zpk', 'sos'}, optional
+        Filter form of the output:
+
+            - second-order sections (recommended): 'sos'
+            - numerator/denominator (default)    : 'ba'
+            - pole-zero                          : 'zpk'
+
+        In general the second-order sections ('sos') form  is
+        recommended because inferring the coefficients for the
+        numerator/denominator form ('ba') suffers from numerical
+        instabilities. For reasons of backward compatibility the default
+        form is the numerator/denominator form ('ba'), where the 'b'
+        and the 'a' in 'ba' refer to the commonly used names of the
+        coefficients used.
+
+        Note: Using the second-order sections form ('sos') is sometimes
+        associated with additional computational costs: for
+        data-intense use cases it is therefore recommended to also
+        investigate the numerator/denominator form ('ba').
+
+    fs : float, optional
+        The sampling frequency of the digital system.
+
+        .. versionadded:: 1.2.0
+
+    Returns
+    -------
+    b, a : ndarray, ndarray
+        Numerator (`b`) and denominator (`a`) polynomials of the IIR filter.
+        Only returned if ``output='ba'``.
+    z, p, k : ndarray, ndarray, float
+        Zeros, poles, and system gain of the IIR filter transfer
+        function.  Only returned if ``output='zpk'``.
+    sos : ndarray
+        Second-order sections representation of the IIR filter.
+        Only returned if ``output='sos'``.
+
+    See Also
+    --------
+    butter : Filter design using order and critical points
+    cheby1, cheby2, ellip, bessel
+    buttord : Find order and critical points from passband and stopband spec
+    cheb1ord, cheb2ord, ellipord
+    iirdesign : General filter design using passband and stopband spec
+
+    Notes
+    -----
+    The ``'sos'`` output parameter was added in 0.16.0.
+
+    Examples
+    --------
+    Generate a 17th-order Chebyshev II analog bandpass filter from 50 Hz to
+    200 Hz and plot the frequency response:
+
+    >>> import numpy as np
+    >>> from scipy import signal
+    >>> import matplotlib.pyplot as plt
+
+    >>> b, a = signal.iirfilter(17, [2*np.pi*50, 2*np.pi*200], rs=60,
+    ...                         btype='band', analog=True, ftype='cheby2')
+    >>> w, h = signal.freqs(b, a, 1000)
+    >>> fig = plt.figure()
+    >>> ax = fig.add_subplot(1, 1, 1)
+    >>> ax.semilogx(w / (2*np.pi), 20 * np.log10(np.maximum(abs(h), 1e-5)))
+    >>> ax.set_title('Chebyshev Type II bandpass frequency response')
+    >>> ax.set_xlabel('Frequency [Hz]')
+    >>> ax.set_ylabel('Amplitude [dB]')
+    >>> ax.axis((10, 1000, -100, 10))
+    >>> ax.grid(which='both', axis='both')
+    >>> plt.show()
+
+    Create a digital filter with the same properties, in a system with
+    sampling rate of 2000 Hz, and plot the frequency response. (Second-order
+    sections implementation is required to ensure stability of a filter of
+    this order):
+
+    >>> sos = signal.iirfilter(17, [50, 200], rs=60, btype='band',
+    ...                        analog=False, ftype='cheby2', fs=2000,
+    ...                        output='sos')
+    >>> w, h = signal.freqz_sos(sos, 2000, fs=2000)
+    >>> fig = plt.figure()
+    >>> ax = fig.add_subplot(1, 1, 1)
+    >>> ax.semilogx(w, 20 * np.log10(np.maximum(abs(h), 1e-5)))
+    >>> ax.set_title('Chebyshev Type II bandpass frequency response')
+    >>> ax.set_xlabel('Frequency [Hz]')
+    >>> ax.set_ylabel('Amplitude [dB]')
+    >>> ax.axis((10, 1000, -100, 10))
+    >>> ax.grid(which='both', axis='both')
+    >>> plt.show()
+
+    """
+    fs = _validate_fs(fs, allow_none=True)
+    ftype, btype, output = (x.lower() for x in (ftype, btype, output))
+    Wn = asarray(Wn)
+    if fs is not None:
+        if analog:
+            raise ValueError("fs cannot be specified for an analog filter")
+        Wn = Wn / (fs/2)
+
+    if np.any(Wn <= 0):
+        raise ValueError("filter critical frequencies must be greater than 0")
+
+    if Wn.size > 1 and not Wn[0] < Wn[1]:
+        raise ValueError("Wn[0] must be less than Wn[1]")
+
+    try:
+        btype = band_dict[btype]
+    except KeyError as e:
+        raise ValueError(f"'{btype}' is an invalid bandtype for filter.") from e
+
+    try:
+        typefunc = filter_dict[ftype][0]
+    except KeyError as e:
+        raise ValueError(f"'{ftype}' is not a valid basic IIR filter.") from e
+
+    if output not in ['ba', 'zpk', 'sos']:
+        raise ValueError(f"'{output}' is not a valid output form.")
+
+    if rp is not None and rp < 0:
+        raise ValueError("passband ripple (rp) must be positive")
+
+    if rs is not None and rs < 0:
+        raise ValueError("stopband attenuation (rs) must be positive")
+
+    # Get analog lowpass prototype
+    if typefunc == buttap:
+        z, p, k = typefunc(N)
+    elif typefunc == besselap:
+        z, p, k = typefunc(N, norm=bessel_norms[ftype])
+    elif typefunc == cheb1ap:
+        if rp is None:
+            raise ValueError("passband ripple (rp) must be provided to "
+                             "design a Chebyshev I filter.")
+        z, p, k = typefunc(N, rp)
+    elif typefunc == cheb2ap:
+        if rs is None:
+            raise ValueError("stopband attenuation (rs) must be provided to "
+                             "design an Chebyshev II filter.")
+        z, p, k = typefunc(N, rs)
+    elif typefunc == ellipap:
+        if rs is None or rp is None:
+            raise ValueError("Both rp and rs must be provided to design an "
+                             "elliptic filter.")
+        z, p, k = typefunc(N, rp, rs)
+    else:
+        raise NotImplementedError(f"'{ftype}' not implemented in iirfilter.")
+
+    # Pre-warp frequencies for digital filter design
+    if not analog:
+        if np.any(Wn <= 0) or np.any(Wn >= 1):
+            if fs is not None:
+                raise ValueError("Digital filter critical frequencies must "
+                                 f"be 0 < Wn < fs/2 (fs={fs} -> fs/2={fs/2})")
+            raise ValueError("Digital filter critical frequencies "
+                             "must be 0 < Wn < 1")
+        fs = 2.0
+        warped = 2 * fs * tan(pi * Wn / fs)
+    else:
+        warped = Wn
+
+    # transform to lowpass, bandpass, highpass, or bandstop
+    if btype in ('lowpass', 'highpass'):
+        if np.size(Wn) != 1:
+            raise ValueError('Must specify a single critical frequency Wn '
+                             'for lowpass or highpass filter')
+
+        if btype == 'lowpass':
+            z, p, k = lp2lp_zpk(z, p, k, wo=warped)
+        elif btype == 'highpass':
+            z, p, k = lp2hp_zpk(z, p, k, wo=warped)
+    elif btype in ('bandpass', 'bandstop'):
+        try:
+            bw = warped[1] - warped[0]
+            wo = sqrt(warped[0] * warped[1])
+        except IndexError as e:
+            raise ValueError('Wn must specify start and stop frequencies for '
+                             'bandpass or bandstop filter') from e
+
+        if btype == 'bandpass':
+            z, p, k = lp2bp_zpk(z, p, k, wo=wo, bw=bw)
+        elif btype == 'bandstop':
+            z, p, k = lp2bs_zpk(z, p, k, wo=wo, bw=bw)
+    else:
+        raise NotImplementedError(f"'{btype}' not implemented in iirfilter.")
+
+    # Find discrete equivalent if necessary
+    if not analog:
+        z, p, k = bilinear_zpk(z, p, k, fs=fs)
+
+    # Transform to proper out type (pole-zero, state-space, numer-denom)
+    if output == 'zpk':
+        return z, p, k
+    elif output == 'ba':
+        return zpk2tf(z, p, k)
+    elif output == 'sos':
+        return zpk2sos(z, p, k, analog=analog)
+    \end{minted}
+
+    \item \underline{Anexo 2:} Extracto de la función $signal.zpk2sos()$
+\begin{minted}[linenos]{python}
+def zpk2sos(z, p, k, pairing=None, *, analog=False):
+    """Return second-order sections from zeros, poles, and gain of a system
+
+    Parameters
+    ----------
+    z : array_like
+        Zeros of the transfer function.
+    p : array_like
+        Poles of the transfer function.
+    k : float
+        System gain.
+    pairing : {None, 'nearest', 'keep_odd', 'minimal'}, optional
+        The method to use to combine pairs of poles and zeros into sections.
+        If analog is False and pairing is None, pairing is set to 'nearest';
+        if analog is True, pairing must be 'minimal', and is set to that if
+        it is None.
+    analog : bool, optional
+        If True, system is analog, otherwise discrete.
+
+        .. versionadded:: 1.8.0
+
+    Returns
+    -------
+    sos : ndarray
+        Array of second-order filter coefficients, with shape
+        ``(n_sections, 6)``. See `sosfilt` for the SOS filter format
+        specification.
+
+    See Also
+    --------
+    sosfilt
+
+    Notes
+    -----
+    The algorithm used to convert ZPK to SOS format is designed to
+    minimize errors due to numerical precision issues. The pairing
+    algorithm attempts to minimize the peak gain of each biquadratic
+    section. This is done by pairing poles with the nearest zeros, starting
+    with the poles closest to the unit circle for discrete-time systems, and
+    poles closest to the imaginary axis for continuous-time systems.
+
+    ``pairing='minimal'`` outputs may not be suitable for `sosfilt`,
+    and ``analog=True`` outputs will never be suitable for `sosfilt`.
+
+    *Algorithms*
+
+    The steps in the ``pairing='nearest'``, ``pairing='keep_odd'``,
+    and ``pairing='minimal'`` algorithms are mostly shared. The
+    ``'nearest'`` algorithm attempts to minimize the peak gain, while
+    ``'keep_odd'`` minimizes peak gain under the constraint that
+    odd-order systems should retain one section as first order.
+    ``'minimal'`` is similar to ``'keep_odd'``, but no additional
+    poles or zeros are introduced
+
+    The algorithm steps are as follows:
+
+    As a pre-processing step for ``pairing='nearest'``,
+    ``pairing='keep_odd'``, add poles or zeros to the origin as
+    necessary to obtain the same number of poles and zeros for
+    pairing.  If ``pairing == 'nearest'`` and there are an odd number
+    of poles, add an additional pole and a zero at the origin.
+
+    The following steps are then iterated over until no more poles or
+    zeros remain:
+
+    1. Take the (next remaining) pole (complex or real) closest to the
+       unit circle (or imaginary axis, for ``analog=True``) to
+       begin a new filter section.
+
+    2. If the pole is real and there are no other remaining real poles [#]_,
+       add the closest real zero to the section and leave it as a first
+       order section. Note that after this step we are guaranteed to be
+       left with an even number of real poles, complex poles, real zeros,
+       and complex zeros for subsequent pairing iterations.
+
+    3. Else:
+
+        1. If the pole is complex and the zero is the only remaining real
+           zero*, then pair the pole with the *next* closest zero
+           (guaranteed to be complex). This is necessary to ensure that
+           there will be a real zero remaining to eventually create a
+           first-order section (thus keeping the odd order).
+
+        2. Else pair the pole with the closest remaining zero (complex or
+           real).
+
+        3. Proceed to complete the second-order section by adding another
+           pole and zero to the current pole and zero in the section:
+
+            1. If the current pole and zero are both complex, add their
+               conjugates.
+
+            2. Else if the pole is complex and the zero is real, add the
+               conjugate pole and the next closest real zero.
+
+            3. Else if the pole is real and the zero is complex, add the
+               conjugate zero and the real pole closest to those zeros.
+
+            4. Else (we must have a real pole and real zero) add the next
+               real pole closest to the unit circle, and then add the real
+               zero closest to that pole.
+
+    .. [#] This conditional can only be met for specific odd-order inputs
+           with the ``pairing = 'keep_odd'`` or ``'minimal'`` methods.
+
+    .. versionadded:: 0.16.0
+
+    Examples
+    --------
+
+    Design a 6th order low-pass elliptic digital filter for a system with a
+    sampling rate of 8000 Hz that has a pass-band corner frequency of
+    1000 Hz. The ripple in the pass-band should not exceed 0.087 dB, and
+    the attenuation in the stop-band should be at least 90 dB.
+
+    In the following call to `ellip`, we could use ``output='sos'``,
+    but for this example, we'll use ``output='zpk'``, and then convert
+    to SOS format with `zpk2sos`:
+
+    >>> from scipy import signal
+    >>> import numpy as np
+    >>> z, p, k = signal.ellip(6, 0.087, 90, 1000/(0.5*8000), output='zpk')
+
+    Now convert to SOS format.
+
+    >>> sos = signal.zpk2sos(z, p, k)
+
+    The coefficients of the numerators of the sections:
+
+    >>> sos[:, :3]
+    array([[0.0014152 , 0.00248677, 0.0014152 ],
+           [1.        , 0.72976874, 1.        ],
+           [1.        , 0.17607852, 1.        ]])
+
+    The symmetry in the coefficients occurs because all the zeros are on the
+    unit circle.
+
+    The coefficients of the denominators of the sections:
+
+    >>> sos[:, 3:]
+    array([[ 1.        , -1.32544025,  0.46989976],
+           [ 1.        , -1.26118294,  0.62625924],
+           [ 1.        , -1.2570723 ,  0.8619958 ]])
+
+    The next example shows the effect of the `pairing` option.  We have a
+    system with three poles and three zeros, so the SOS array will have
+    shape (2, 6). The means there is, in effect, an extra pole and an extra
+    zero at the origin in the SOS representation.
+
+    >>> z1 = np.array([-1, -0.5-0.5j, -0.5+0.5j])
+    >>> p1 = np.array([0.75, 0.8+0.1j, 0.8-0.1j])
+
+    With ``pairing='nearest'`` (the default), we obtain
+
+    >>> signal.zpk2sos(z1, p1, 1)
+    array([[ 1.  ,  1.  ,  0.5 ,  1.  , -0.75,  0.  ],
+           [ 1.  ,  1.  ,  0.  ,  1.  , -1.6 ,  0.65]])
+
+    The first section has the zeros {-0.5-0.05j, -0.5+0.5j} and the poles
+    {0, 0.75}, and the second section has the zeros {-1, 0} and poles
+    {0.8+0.1j, 0.8-0.1j}. Note that the extra pole and zero at the origin
+    have been assigned to different sections.
+
+    With ``pairing='keep_odd'``, we obtain:
+
+    >>> signal.zpk2sos(z1, p1, 1, pairing='keep_odd')
+    array([[ 1.  ,  1.  ,  0.  ,  1.  , -0.75,  0.  ],
+           [ 1.  ,  1.  ,  0.5 ,  1.  , -1.6 ,  0.65]])
+
+    The extra pole and zero at the origin are in the same section.
+    The first section is, in effect, a first-order section.
+
+    With ``pairing='minimal'``, the first-order section doesn't have
+    the extra pole and zero at the origin:
+
+    >>> signal.zpk2sos(z1, p1, 1, pairing='minimal')
+    array([[ 0.  ,  1.  ,  1.  ,  0.  ,  1.  , -0.75],
+           [ 1.  ,  1.  ,  0.5 ,  1.  , -1.6 ,  0.65]])
+
+    """
+    # TODO in the near future:
+    # 1. Add SOS capability to `filtfilt`, `freqz`, etc. somehow (#3259).
+    # 2. Make `decimate` use `sosfilt` instead of `lfilter`.
+    # 3. Make sosfilt automatically simplify sections to first order
+    #    when possible. Note this might make `sosfiltfilt` a bit harder (ICs).
+    # 4. Further optimizations of the section ordering / pole-zero pairing.
+    # See the wiki for other potential issues.
+
+    xp = array_namespace(z, p)
+
+    # convert to numpy, convert back on exit   XXX
+    z, p = map(np.asarray, (z, p))
+    k = np.asarray(k)
+
+    if pairing is None:
+        pairing = 'minimal' if analog else 'nearest'
+
+    valid_pairings = ['nearest', 'keep_odd', 'minimal']
+    if pairing not in valid_pairings:
+        raise ValueError(f'pairing must be one of {valid_pairings}, not {pairing}')
+
+    if analog and pairing != 'minimal':
+        raise ValueError('for analog zpk2sos conversion, '
+                         'pairing must be "minimal"')
+
+    if len(z) == len(p) == 0:
+        if not analog:
+            return xp.asarray(np.asarray([[k, 0., 0., 1., 0., 0.]]))
+        else:
+            return xp.asarray(np.asarray([[0., 0., k, 0., 0., 1.]]))
+
+    if pairing != 'minimal':
+        # ensure we have the same number of poles and zeros, and make copies
+        p = np.concatenate((p, np.zeros(max(len(z) - len(p), 0))))
+        z = np.concatenate((z, np.zeros(max(len(p) - len(z), 0))))
+        n_sections = (max(len(p), len(z)) + 1) // 2
+
+        if len(p) % 2 == 1 and pairing == 'nearest':
+            p = np.concatenate((p, [0.]))
+            z = np.concatenate((z, [0.]))
+        assert len(p) == len(z)
+    else:
+        if len(p) < len(z):
+            raise ValueError('for analog zpk2sos conversion, '
+                             'must have len(p)>=len(z)')
+
+        n_sections = (len(p) + 1) // 2
+
+    # Ensure we have complex conjugate pairs
+    # (note that _cplxreal only gives us one element of each complex pair):
+    z = np.concatenate(_cplxreal(z))
+    p = np.concatenate(_cplxreal(p))
+    if not np.isreal(k):
+        raise ValueError('k must be real')
+    k = k.real
+
+    if not analog:
+        # digital: "worst" is the closest to the unit circle
+        def idx_worst(p):
+            return np.argmin(np.abs(1 - np.abs(p)))
+    else:
+        # analog: "worst" is the closest to the imaginary axis
+        def idx_worst(p):
+            return np.argmin(np.abs(np.real(p)))
+
+    sos = np.zeros((n_sections, 6))
+
+    # Construct the system, reversing order so the "worst" are last
+    for si in range(n_sections-1, -1, -1):
+        # Select the next "worst" pole
+        p1_idx = idx_worst(p)
+        p1 = p[p1_idx]
+        p = np.delete(p, p1_idx)
+
+        # Pair that pole with a zero
+
+        if np.isreal(p1) and np.isreal(p).sum() == 0:
+            # Special case (1): last remaining real pole
+            if pairing != 'minimal':
+                z1_idx = _nearest_real_complex_idx(z, p1, 'real')
+                z1 = z[z1_idx]
+                z = np.delete(z, z1_idx)
+                sos[si] = _single_zpksos([z1, 0], [p1, 0], 1)
+            elif len(z) > 0:
+                z1_idx = _nearest_real_complex_idx(z, p1, 'real')
+                z1 = z[z1_idx]
+                z = np.delete(z, z1_idx)
+                sos[si] = _single_zpksos([z1], [p1], 1)
+            else:
+                sos[si] = _single_zpksos([], [p1], 1)
+
+        elif (len(p) + 1 == len(z)
+              and not np.isreal(p1)
+              and np.isreal(p).sum() == 1
+              and np.isreal(z).sum() == 1):
+
+            # Special case (2): there's one real pole and one real zero
+            # left, and an equal number of poles and zeros to pair up.
+            # We *must* pair with a complex zero
+
+            z1_idx = _nearest_real_complex_idx(z, p1, 'complex')
+            z1 = z[z1_idx]
+            z = np.delete(z, z1_idx)
+            sos[si] = _single_zpksos([z1, z1.conj()], [p1, p1.conj()], 1)
+
+        else:
+            if np.isreal(p1):
+                prealidx = np.flatnonzero(np.isreal(p))
+                p2_idx = prealidx[idx_worst(p[prealidx])]
+                p2 = p[p2_idx]
+                p = np.delete(p, p2_idx)
+            else:
+                p2 = p1.conj()
+
+            # find closest zero
+            if len(z) > 0:
+                z1_idx = _nearest_real_complex_idx(z, p1, 'any')
+                z1 = z[z1_idx]
+                z = np.delete(z, z1_idx)
+
+                if not np.isreal(z1):
+                    sos[si] = _single_zpksos([z1, z1.conj()], [p1, p2], 1)
+                else:
+                    if len(z) > 0:
+                        z2_idx = _nearest_real_complex_idx(z, p1, 'real')
+                        z2 = z[z2_idx]
+                        assert np.isreal(z2)
+                        z = np.delete(z, z2_idx)
+                        sos[si] = _single_zpksos([z1, z2], [p1, p2], 1)
+                    else:
+                        sos[si] = _single_zpksos([z1], [p1, p2], 1)
+            else:
+                # no more zeros
+                sos[si] = _single_zpksos([], [p1, p2], 1)
+
+    assert len(p) == len(z) == 0  # we've consumed all poles and zeros
+    del p, z
+
+    # put gain in first sos
+    sos[0][:3] *= k
+   return xp.asarray(sos)
+\end{minted}
+
+    
+\end{itemize}
+\end{document}
