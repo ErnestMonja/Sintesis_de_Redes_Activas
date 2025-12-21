@@ -2,35 +2,36 @@ import numpy as np
 from scipy import signal
 import matplotlib.pyplot as plt
 
+## Ancho de Banda a Aceptar:
+f1 = 1000                                       # Frecuencia Inferior: 1000 [Hz]
+f2 = 2000                                       # Frecuencia Superior: 2000 [Hz]
+Wbw = [2*np.pi*f1, 2*np.pi*f2]
 
-## Frecuencias de Corte:
-f1 = 500      # Hz
-f2 = 1500     # Hz
-w1 = 2 * np.pi * f1
-w2 = 2 * np.pi * f2
-Wn = [w1, w2]
-
-
-## Orden del Filtro Prototipo Pasa Bajos:
-N = 2
-
-
-## Aproximación de Filtro Pasa Banda con ButterWorth:
-num, den = signal.butter(N, Wn, btype='bandpass', analog = True)
+## Aproximación de un filtro pasa banda, analógico y de segundo orden que sigue 
+## las frecuencias listadas anteriormente.
+num, den = signal.butter(N = 2,                 # Filtro de 2do Orden
+                        Wn = Wbw,               # Frecuencias a Rechazar
+                        btype = 'bandpass',     # Filtro pasa banda
+                        analog = True,          # Filtro analógico
+                        output = 'ba')          # Salida del tipo: F(s) = num/den
 
 
-## Obtención de los Ceros, Polos y Constante:
+## Impresión de los parámetros obtenidos:
+print("Numerador:", num)
+print("Denominador:", den)
+
+## Descomposición en ceros, polos y constante
 z, p, k = signal.tf2zpk(num, den)
-print("Ceros: ", z)                                 # 0 ; 0
-print("Polos: ", p)                                 # -3116.32 + j7735.93 ; -3116.32 - j7735.93 ; -1326.56 + j3293.05 ; -1326.56 - j3293.05
-print("Constante: ", k)                             # 39478417.60
+print("Ceros: ", z)                             # [0 ; 0]
+print("Polos: ", p)                             # [-2775.72 +- j11124.47 ;
+                                                #  -1667.15 +- j6681.59]
+print("Constante: ", k)                         # [39478417.60]
 
-
-## Descomposición en funciones bicuadráticas:
-sos = signal.tf2sos(num, den)                       # [3.94784176e+07 0 0 ; 1 6.23264064e+03 6.95561180e+07]
-print("Secciones de segundo orden (SOS):")          # [1 0 0 ; 1 2.65312524e+03 1.26039498e+07]]
-print(sos)
-
+## Descomposición en bicuadraticas mediante sos
+sos = signal.tf2sos(num,den)                    # [[3.94784176e+07 0 0 ;
+                                                # 1 5.55144899e+03 1.31458664e+08]
+print("Coeficientes del SOS:", sos)             # [1 0 0 ;
+                                                # 1 3.33431689e+03 4.74231339e+07]]
 
 ## Diagrama de Bode de cada bicuadrática:
 plt.figure()
@@ -43,7 +44,6 @@ plt.title('Respuesta individual de cada biquad')
 plt.grid(True)
 plt.legend()
 plt.show()
-
 
 ## Respuesta en Frecuencia:
 w, mag, phase = signal.bode((num, den))
