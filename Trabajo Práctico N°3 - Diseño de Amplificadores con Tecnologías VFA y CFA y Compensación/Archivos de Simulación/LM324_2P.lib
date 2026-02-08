@@ -1,0 +1,26 @@
+* =========================================================
+* LM324 - Modelo VFA simplificado (2 polos)
+* Pines: 1 = IN+, 2 = IN-, 3 = V+, 4 = V-, 5 = OUT
+* =========================================================
+.SUBCKT LM324 1 2 3 4 5
+
+* Resistencia de entrada (evita nodos flotantes)
+RIN 1 2 1T
+
+* --- Etapa 1 ---
+* Ganancia ~316, polo a 10 Hz
+G1 n1 0 1 2 3.16m
+R1 n1 0 100k
+C1 n1 0 0.159u     ; f = 10 Hz
+
+* --- Etapa 2 ---
+* Ganancia ~316, polo a 5.06 MHz
+G2 5 0 n1 0 3.16m
+R2 5 0 100k
+C2 5 0 0.314p      ; f = 5.06 MHz
+
+* Pines de alimentación (dummy)
+RV+ 3 0 1G
+RV- 4 0 1G
+
+.ENDS LM324
