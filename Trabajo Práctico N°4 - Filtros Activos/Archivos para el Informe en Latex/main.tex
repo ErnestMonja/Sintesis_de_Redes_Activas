@@ -114,12 +114,12 @@ De aquí, podemos hacer uso de la aproximación en cascada de 2 funciones de tra
 
 \begin{equation}
     \label{eq_2}
-    T_{PB} = \frac{3,284x10^{7}}{s^2 + 3184s + 6,632x10^{7}}
+    T_{PB}(s) = \frac{3,284x10^{7}}{s^2 + 3184s + 6,632x10^{7}}
 \end{equation}
 
 \begin{equation}
     \label{eq_3}
-    T_{PA} = \frac{0,5s^{2}}{s^2 + 1896s + 2,35x10^{7}}
+    T_{PA}(s) = \frac{0,5s^{2}}{s^2 + 1896s + 2,35x10^{7}}
 \end{equation}
 
 A continuación se presenta un diagrama de bode tanto del filtro completo como del accionar de cada una de sus bicuadráticas:
@@ -564,26 +564,30 @@ Nótese aquí que al tener dos Filtro de Topología Realimentación Positiva de 
 
 \begin{equation}
     \label{eq_49}
-    \omega_{p} = \frac{1}{RC}
+    \omega_{p} = \sqrt{\frac{1}{R_{1}R_{2}C_{1}C_{2}}}
 \end{equation}
 
 Donde dadas los criterios establecidos para la síntesis de ambos filtros, resulta entonces que se define la sensibilidad de la frecuencia del polo $\omega_{p}$ con respecto a $R_{1}$, $R_{2}$, $ C_{1}$ y $C_{2}$, según la ecuación (\ref{eq_48}) como:
 
 \begin{equation}
     \label{eq_50}
-    S_{R_{1}}^{\omega_{p}} = \frac{R_{1}}{\omega_{p}}\frac{\partial \omega_{p}}{\partial R_{1}} = \frac{R_{1}}{\frac{1}{R_{1}C}}\frac{\partial}{\partial R_{1}}\left(\frac{1}{R_{1}C}\right) = \frac{R_{1}^{2}C}{C} \left(-\frac{1}{R_{1}^{2}}\right) = - 1
+    S_{R_{1}}^{\omega_{p}} = \frac{R_{1}}{\omega_{p}}\frac{\partial \omega_{p}}{\partial R_{1}} 
+    = \frac{R_{1}}{\sqrt{\frac{1}{R_{1}R_{2}C_{1}C_{2}}}} \frac{\partial}{\partial R_{1}}\left(\sqrt{\frac{1}{R_{1}R_{2}C_{1}C_{2}}}\right) 
 \end{equation}
 \begin{equation}
     \label{eq_51}
-    S_{R_{2}}^{\omega_{p}} = \frac{R_{2}}{\omega_{p}}\frac{\partial \omega_{p}}{\partial R_{2}} = \frac{R_{2}}{\frac{1}{R_{2}C}}\frac{\partial}{\partial R_{2}}\left(\frac{1}{R_{2}C}\right) = \frac{R_{2}^{2}C}{C} \left(-\frac{1}{R_{2}^2}\right) = - 1
+    S_{R_{1}}^{\omega_{p}} = R_{1} \sqrt{R_{1}}\sqrt{R_{2}C_{1}C_{2}} \frac{\partial}{\partial R_{1}} \left(\frac{1}{\sqrt{R_{1}}} \right) \left(\frac{1}{\sqrt{R_{2}C_{1}C_{2}}}\right)
 \end{equation}
 \begin{equation}
     \label{eq_52}
-    S_{C_{1}}^{\omega_{p}} = \frac{C_{1}}{\omega_{p}}\frac{\partial \omega_{p}}{\partial C_{1}} = \frac{C_{1}}{\frac{1}{RC_{1}}}\frac{\partial}{\partial C_{1}}\left(\frac{1}{RC_{1}}\right) = \frac{C_{1}^{2}R}{R} \left(-\frac{1}{C_{1}^2}\right) = - 1
+    S_{R_{1}}^{\omega_{p}} = R_{1} \sqrt{R_{1}} \left(-\frac{1}{2R_{1}\sqrt{R_{1}}}\right) = - \frac{1}{2}
 \end{equation}
+
+Se tiene que este resultado se comprueba para todas las sensibilidades del polo $\omega_{p}$ con respecto a cada constante del circuito, tal que:
+
 \begin{equation}
     \label{eq_53}
-    S_{C_{2}}^{\omega_{p}} = \frac{C_{2}}{\omega_{p}}\frac{\partial \omega_{p}}{\partial C_{2}} = \frac{C_{2}}{\frac{1}{RC_{2}}}\frac{\partial}{\partial C_{2}}\left(\frac{1}{RC_{2}}\right) = \frac{C_{2}^{2}R}{R} \left(-\frac{1}{C_{2}^2}\right) = - 1
+    S_{R_{1}}^{\omega_{p}} = S_{R_{2}}^{\omega_{p}} = S_{C_{1}}^{\omega_{p}} = S_{C_{2}}^{\omega_{p}} = - \frac{1}{2}
 \end{equation}
 
 Adicionalmente, se puede analizar la sensibilidad de la frecuencia del polo $\omega_{p}$ con respecto a la ganancia $k$, sin embargo como $k$ no es función de $\omega_{p}$, se tendrá que:
@@ -600,10 +604,57 @@ Finalmente, por propiedades de la sensibilidad, resulta que:
     S_{R_{1}, R_{2}, C_{1}, C_{2}, k}^{\omega_{p}} = - \frac{1}{2}
 \end{equation}
 
-Podemos también analizar al conjunto de ambos filtros como uno solo, donde si definimos a la frecuencia del polo como la media geométrica entre la frecuencia del polo del Filtro Pasa Bajo como la del Filtro Pasa Alto, es decir
+
+\subsubsection{Sensibilidad de $\frac{\omega_{p}}{Q_{p}}$}
+Para realizar las sensibilidades con respecto al ancho de banda, primero debemos definir al factor de calidad de los polos $Q_{p}$ y para ello igualaremos el valor encontrado en la ecuación (\ref{eq_16}) con el valor genérico que tiene el termino relacionado a $s$ en un filtro genérico, es decir que:
 
 \begin{equation}
     \label{eq_56}
+    \frac{\omega_{p}}{Q_{p}} = \frac{1}{R_{1}C_{1}} + \frac{1}{R_{2}C_{1}} + \frac{1-k}{R_{2}C_{2}}
+\end{equation}
+
+Por lo tanto, es posible decir que por la definición de sensibilidad dada en la ecuación (\ref{eq_48}), que la sensibilidad del Ancho de Banda dado en (\ref{eq_63}) con respecto a $R_{1}$, $R_{2}$, $ C_{1}$ y $C_{2}$ es igual a:
+
+\begin{equation}
+    \label{eq_57}
+    S_{R_{1}}^{\frac{\omega_{P}}{Q_{p}}} = -\frac{1}{2} + Q_{p}\sqrt{\frac{R_{2}C_{2}}{R_{1}C_{1}}}
+\end{equation}
+
+\begin{equation}
+    \label{eq_58}
+    S_{R_{2}}^{\frac{\omega_{P}}{Q_{p}}} = -\frac{1}{2} + Q_{p}\left( \sqrt{\frac{R_{1}C_{2}}{R_{2}C_{1}}} + (1-k) \sqrt{\frac{R_{1}C_{1}}{R_{2}C_{2}}}\right)
+\end{equation}
+
+\begin{equation}
+    \label{eq_59}
+    S_{C_{1}}^{\frac{\omega_{P}}{Q_{p}}} = -\frac{1}{2} + Q_{p}\left( \sqrt{\frac{R_{1}C_{2}}{R_{2}C_{1}}} + \sqrt{\frac{R_{2}C_{2}}{R_{1}C_{1}}}\right)
+\end{equation}
+
+\begin{equation}
+    \label{eq_60}
+    S_{C_{2}}^{\frac{\omega_{P}}{Q_{p}}} = -\frac{1}{2} + (1-k)Q_{p} \sqrt{\frac{R_{1}C_{1}}{R_{2}C_{2}}}
+\end{equation}
+
+Se tiene que para definir la sensibilidad de $k$ con respecto al $\frac{\omega_{p}}{Q_{p}}$, se cumple ahora que según (\ref{eq_56}), existe una relación entre $k$ y el ancho de banda. Para calcularla, se tiene que podemos partir de la parte a derivar de la sensibilidad, es decir:
+
+\begin{equation}
+    \label{eq_61}
+    \frac{\partial}{\partial k} \left(\frac{1}{R_{1}C_{1}} + \frac{1}{R_{2}C_{1}} + \frac{1-k}{R_{2}C_{2}}\right) = \frac{\partial}{\partial k} \left(\frac{1-k}{R_{2}C_{2}}\right) = -\frac{1}{R_{2}C_{2}}
+\end{equation}
+
+Resulta entonces que la sensibilidad es igual a:
+
+\begin{equation}
+    \label{eq_62}
+    S_{k}^{\frac{\omega_{p}}{Q_{p}}} = \frac{k}{\frac{\omega_{p}}{Q_{p}}} \frac{\partial}{\partial k} \left(\frac{\omega_{p}}{Q_{p}}\right) = \frac{-\frac{k}{R_{2}C_{2}}}{\frac{\omega_{p}}{Q_{p}} = \frac{1}{R_{1}C_{1}} + \frac{1}{R_{2}C_{1}} + \frac{1-k}{R_{2}C_{2}}} 
+\end{equation}
+
+
+\subsection{Análisis de la Peor Desviación}
+Para este análisis, podemos analizar al conjunto de ambos filtros como uno solo, donde si definimos a la frecuencia del polo como la media geométrica entre la frecuencia del polo del Filtro Pasa Bajo como la del Filtro Pasa Alto, es decir
+
+\begin{equation}
+    \label{eq_63}
     \omega_o = \sqrt{\frac{1}{R_{LP}C}\frac{1}{R_{HP}C}} = \frac{1}{C\sqrt{R_{LP}R_{HP}}} = 6290,55 \ \left[\frac{rad}{s}\right]
 \end{equation}
 
@@ -613,92 +664,44 @@ Podemos analizar entonces a las sensibilidades de $\omega_o$ con respecto a las 
 \begin{itemize}
     \item \underline{Sensibilidad de $\omega_o$ respecto a $C$:}
     \begin{equation}
-        \label{eq_57}
+        \label{eq_64}
         S_{C}^{\omega_{0}} = \frac{C}{\omega_{0}}\frac{\partial \omega_{0}}{\partial C} = \frac{C}{\sqrt{\frac{1}{R_{LP}R_{HP}C^2}}}\frac{\partial}{\partial C}\left(\sqrt{\frac{1}{R_{LP}R_{HP}C^2}}\right)
     \end{equation}
     \begin{equation}
-        \label{eq_58}
+        \label{eq_65}
         S_{C}^{\omega_{0}} = \frac{C^{2}}{\sqrt{\frac{1}{R_{LP}R_{HP}C^2}}} \left(-\frac{\sqrt{\frac{1}{R_{LP}R_{HP}C^2}}}{C^2}\right) = - 1
     \end{equation}
     \item \underline{Sensibilidad de $\omega_o$ respecto a $R_{LP}$:}
     \begin{equation}
-        \label{eq_59}
+        \label{eq_66}
             S_{R_{LP}}^{\omega_o} = \frac{R_{LP}}{\omega_{o}} \frac{\partial \omega_{o}}{\partial R_{LP}} = \frac{R_{LP}}{\frac{1}{C\sqrt{R_{LP}R_{HP}}}} \frac{\partial}{\partial R_{LP}} \left(\frac{1}{C\sqrt{R_{LP}R_{HP}}}\right) 
         \end{equation}
         \begin{equation}
-            \label{eq_60}
+            \label{eq_67}
             S_{R_{LP}}^{\omega_o} =  CR_{LP}\sqrt{R_{LP}R_{HP}} \left(-\frac{1}{CR_{LP}\sqrt{R_{LP}R_{HP}}}\right) = - \frac{1}{2} 
         \end{equation}
     \item \underline{Sensibilidad de $\omega_o$ respecto a $R_{HP}$:}
     \begin{equation}
-        \label{eq_61}
+        \label{eq_68}
             S_{R_{HP}}^{\omega_o} = \frac{R_{HP}}{\omega_{o}} \frac{\partial \omega_{o}}{\partial R_{HP}} = \frac{R_{HP}}{\frac{1}{C\sqrt{R_{LP}R_{HP}}}} \frac{\partial}{\partial R_{HP}} \left(\frac{1}{C\sqrt{R_{LP}R_{HP}}}\right) 
         \end{equation}
         \begin{equation}
-            \label{eq_62}
+            \label{eq_69}
             S_{R_{HP}}^{\omega_o} =  CR_{HP}\sqrt{R_{LP}R_{HP}} \left(-\frac{1}{CR_{LP}\sqrt{R_{HP}R_{HP}}}\right) = - \frac{1}{2} 
         \end{equation}
 \end{itemize}
 
-
-
-\subsubsection{Sensibilidad de $\frac{\omega_{p}}{Q_{p}}$}
-Para realizar las sensibilidades con respecto al ancho de banda, primero debemos definir al factor de calidad de los polos $Q_{p}$ y para ello igualaremos el valor encontrado en la ecuación (\ref{eq_19}) con el valor genérico que tiene el termino relacionado a $s$ en un filtro genérico, es decir que:
+Se tiene entonces que el desplazamiento relativo total de la frecuencia central y de las etapas, considerando variaciones pequeñas y simultáneas en los componentes, se aproxima por:
 
 \begin{equation}
-    \label{eq_63}
-    \frac{\omega_{p}}{Q_{p}} = \frac{3 - k}{RC}
-\end{equation}
-
-Por lo tanto, es posible decir que por la definición de sensibilidad dada en la ecuación (\ref{eq_48}), que la sensibilidad del Ancho de Banda dado en (\ref{eq_63}) con respecto a $R_{1}$, $R_{2}$, $ C_{1}$ y $C_{2}$ es igual a:
-
-\begin{equation}
-    \label{eq_64}
-    S_{R_{1}}^{\frac{\omega_{P}}{Q_{p}}} = \frac{R_1}{\frac{\omega_{p}}{Q_{p}}} \frac{\partial}{\partial R_{1}} \left(\frac{\omega_{p}}{Q_{p}}\right) = \frac{R_{1}^{2}C}{3 - k} \frac{\partial}{\partial R_1} \left(\frac{3 - k}{R_{1}C}\right) = R_{1}^{2} \left(-\frac{1}{R_{1}^2}\right) = - 1
-\end{equation}
-
-\begin{equation}
-    \label{eq_65}
-    S_{R_{2}}^{\frac{\omega_{P}}{Q_{p}}} = \frac{R_2}{\frac{\omega_{p}}{Q_{p}}} \frac{\partial}{\partial R_{2}} \left(\frac{\omega_{p}}{Q_{p}}\right) = \frac{R_{2}^{2}C}{3 - k} \frac{\partial}{\partial R_2} \left(\frac{3 - k}{R_{2}C}\right) = R_{2}^{2} \left(-\frac{1}{R_{2}^2}\right) = - 1
-\end{equation}
-
-\begin{equation}
-    \label{eq_66}
-    S_{C_{1}}^{\frac{\omega_{P}}{Q_{p}}} = \frac{C_1}{\frac{\omega_{p}}{Q_{p}}} \frac{\partial}{\partial C_{1}} \left(\frac{\omega_{p}}{Q_{p}}\right) = \frac{RC_{1}^{2}}{3 - k} \frac{\partial}{\partial C_1} \left(\frac{3 - k}{RC_{1}}\right) = C_{1}^{2} \left(-\frac{1}{C_{1}^2}\right) = - 1
-\end{equation}
-
-\begin{equation}
-    \label{eq_67}
-    S_{C_{2}}^{\frac{\omega_{P}}{Q_{p}}} = \frac{C_2}{\frac{\omega_{p}}{Q_{p}}} \frac{\partial}{\partial C_{2}} \left(\frac{\omega_{p}}{Q_{p}}\right) = \frac{RC_{2}^{2}}{3 - k} \frac{\partial}{\partial C_2} \left(\frac{3 - k}{RC_{2}}\right) = C_{2}^{2} \left(-\frac{1}{C_{2}^2}\right) = - 1
-\end{equation}
-
-En este caso, se verifica que según (\ref{eq_63}), existe una relación entre $k$ y el ancho de banda, de modo tal que la sensibilidad es igual a:
-
-\begin{equation}
-    \label{eq_68}
-    S_{k}^{\frac{\omega_{p}}{Q_{p}}} = \frac{k}{\frac{\omega_{p}}{Q_{p}}} \frac{\partial}{\partial k} \left(\frac{\omega_{p}}{Q_{p}}\right) = \frac{RCk}{3 - k} \frac{\partial}{\partial k} \left(\frac{3}{RC} -\frac{k}{RC}\right) = \frac{RCk}{3 - k} \left(0 - \frac{1}{RC}\right) = -\frac{k}{3 - k}
-\end{equation}
-
-Donde según las ecuaciones (\ref{eq_22}) y (\ref{eq_43}), se tiene que: $k = 2,609$ y por lo tanto la sensibilidad será igual a:
-
-\begin{equation}
-    \label{eq_69}
-    S_{k}^{\frac{\omega_{p}}{Q_{p}}} = -\frac{2,609}{3 - 2,609} = -6,67
-\end{equation}
-
-
-\subsection{Análisis de la Peor Desviación}
-El desplazamiento relativo total de la frecuencia central y de las etapas, considerando variaciones pequeñas y simultáneas en los componentes, se aproxima por:
-
-\begin{equation}
-    \label{70}
+    \label{eq_70}
     \frac{\Delta \omega_{o}}{\omega_{o}} \approx S^{\omega_0}_{C} \frac{\Delta C}{C} + S^{\omega_0}_{R_{\text{lp}}} \frac{\Delta R_{LP}}{R_{LP}} + S^{\omega_0}_{R_{HP}} \frac{\Delta R_{HP}}{R_{HP}}
 \end{equation}
 
 Dado que todas las sensibilidades son negativas ($S_{C}^{\omega_o} = - 1$, $S_{R_{LP}}^{\omega_o} = -\frac{1}{2}$ y $S_{R_{HP}}^{\omega_o} = -\frac{1}{2}$), el mayor desplazamiento en magnitud ocurre cuando todas las variaciones se alinean para perturbar ($\omega_o$) en la misma dirección. Asumiendo tolerancias máximas $\delta = |\frac{\Delta x}{x}|$ para todos los componentes, el error absoluto del peor caso de desviación está dado por:
 
 \begin{equation}
-    \label{71}
+    \label{eq_71}
     \left|\frac{\Delta \omega_o}{\omega_o} \right|_{worst} = \left| S_{C}^{\omega_o}\right| \delta + \left| S_{R_{LP}}^{\omega_o}\right| \delta + \left| S_{R_{HP}}^{\omega_o}\right| \delta = (1 + 0,5 + 0,5)\delta = 2\delta
 \end{equation}
 
@@ -773,7 +776,7 @@ A lo largo de este trabajo se ha desarrollado un Filtro Pasa Banda, siguiendo lo
 A continuación se presenta el código en Matlab utilizado para obtener las funciones de transferencia de los filtros:
 
 \begin{lstlisting}[style=matlab]
-close all; clear all; clc;        % Trabajo Practico N°4 - Filtros Activos
+close all; clear all; clc;        % Trabajo Practico 4 - Filtros Activos
 
 %% Parametros de Entrada
 fp = [800 1250];                  % Banda de Paso [Hz]
